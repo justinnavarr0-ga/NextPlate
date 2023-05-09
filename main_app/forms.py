@@ -1,7 +1,7 @@
 from django.forms import ModelForm
-from .models import Saved
+from .models import Ingredients
 
-class SavedForm(ModelForm):
+class IngredientForm(ModelForm):
     class Meta:
-        model = Saved
+        model = Ingredients
         fields = '__all__'

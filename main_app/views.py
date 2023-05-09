@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Recipe, Saved
+from .models import Recipe
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SavedForm
+
 
 # Create your views here.
 def home(request):
@@ -49,17 +49,6 @@ class RecipeUpdate(UpdateView):
 class RecipeDelete(DeleteView):
     model = Recipe
     success_url = '/recipes'
-
-class SavedRecipes(ListView):
-    model = Saved
-    template_name = 'main_app/saved_list.html'
-
-def add_to_saved(request, recipe_id):
-    form = SavedForm(request.POST)
-    if form.is_valid():
-        saved_recipe = form.save(commit=False)
-        saved_recipe.save()
-    return redirect('recipe_detail', recipe_id)
 
 
 def signup(request):
