@@ -4,4 +4,4 @@ from .models import Ingredients
 class IngredientForm(ModelForm):
     class Meta:
         model = Ingredients
-        fields = ['amount', 'name', 'measurement']
+        fields = ['amount', 'measurement', 'name']

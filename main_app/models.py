@@ -2,21 +2,21 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-MEASUREMENTS = (
-    ('oz', 'ounce'),
-    ('g', 'gram'),
-    ('lb', 'pound'),
-    ('kg', 'kilogram'),
-    ('pinch', 'pinch'),
-    ('l', 'liter'),
-    ('gal', 'Gallon'),
-    ('pint', 'Pint'),
-    ('qt', 'Quart'),
-    ('ml', 'Mililiter'),
-    ('cup', 'Cup'),
-    ('tbsp', 'tablespoon'),
-    ('tsp', 'teaspoon'),
-)
+# MEASUREMENTS = (
+#     ('oz', 'ounce'),
+#     ('g', 'gram'),
+#     ('lb', 'pound'),
+#     ('kg', 'kilogram'),
+#     ('pinch', 'pinch'),
+#     ('l', 'liter'),
+#     ('gal', 'Gallon'),
+#     ('pint', 'Pint'),
+#     ('qt', 'Quart'),
+#     ('ml', 'Mililiter'),
+#     ('cup', 'Cup'),
+#     ('tbsp', 'tablespoon'),
+#     ('tsp', 'teaspoon'),
+# )
 
 
 
@@ -34,17 +34,13 @@ class Recipe(models.Model):
 
 class Ingredients(models.Model):
     amount = models.FloatField()
-    measurement = models.CharField(
-        max_length=6,
-        choices=MEASUREMENTS,
-        default=MEASUREMENTS[0][0]
-    )
+    measurement = models.CharField(max_length=6)
     name = models.CharField(max_length=50)
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE
     )
     def __str__(self):
-        return f"{self.amount} {self.get_measurement_display()}(s) of {self.name}"
+        return f"{self.amount} {self.get_measurement_display()} of {self.name}"
     class Meta:
         ordering = ['-name']
 
