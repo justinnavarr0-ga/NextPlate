@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Recipe
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from .models import Recipe, Ingredients
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from .forms import IngredientForm
+from django.urls import reverse
 
 
 # Create your views here.
@@ -28,8 +30,20 @@ class PersonalList(ListView):
 class RecipesList(ListView):
     model = Recipe
 
-class RecipeDetail(DetailView):
+class RecipeDetail(FormMixin, DetailView):
     model = Recipe
+    form_class = IngredientForm
+    template_name = 'main_app/recipe_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
+
+    def get_form(self):
+        form = super().get_form()
+        form.instance.recipe = self.object
+        return form
 
 class RecipeCreate(CreateView):
     model = Recipe
@@ -49,6 +63,29 @@ class RecipeUpdate(UpdateView):
 class RecipeDelete(DeleteView):
     model = Recipe
     success_url = '/recipes'
+
+
+# class IngredientAdd(CreateView):
+#     model = Ingredients
+#     fields = ['amount', 'name', 'measurement', 'recipe']
+#     template_name = 'main_app/recipe_detail.html'
+
+#     def form_valid(self, form):
+#         recipe_id = self.kwargs['recipe_id']
+#         form.instance.recipe_id = recipe_id
+#         return super().form_valid(form)
+
+#     def get_success_url(self):
+#         recipe_id = self.kwargs['recipe_id']
+#         return reverse('recipe_detail', recipe_id = recipe_id)
+
+def add_ingredient(request, recipe_id):
+    form = IngredientForm(request.POST)
+    if form.is_valid():
+        new_ingredient = form.save(commit=False)
+        new_ingredient.recipe_id = recipe_id
+        new_ingredient.save()
+    return redirect('recipe_detail', recipe_id)
 
 
 def signup(request):

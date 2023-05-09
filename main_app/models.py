@@ -35,7 +35,7 @@ class Recipe(models.Model):
 class Ingredients(models.Model):
     amount = models.FloatField()
     measurement = models.CharField(
-        max_length=5,
+        max_length=6,
         choices=MEASUREMENTS,
         default=MEASUREMENTS[0][0]
     )
@@ -44,10 +44,9 @@ class Ingredients(models.Model):
         Recipe, on_delete=models.CASCADE
     )
     def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('ingredient_detail', kwargs={'pk': self.id})
+        return f"{self.amount} {self.get_measurement_display()}(s) of {self.name}"
+    class Meta:
+        ordering = ['-name']
 
 
 class Saved(models.Model):
