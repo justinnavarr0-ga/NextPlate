@@ -17,8 +17,18 @@
           <li><a href="/" class="left brand-logo">&nbsp;&nbsp;NextPlate</a></li>
         </ul>
         <ul class="right">
-          <li><a href="/about">About</a></li>
-          <li><a href="/recipes">View Recipes</a></li>
+            
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'recipe_index' %}">View All Recipes</a></li>
+            <li><a href="{% url 'recipe_create' %}">Add New Recipe</a></li>
+            <li><a href="{% url 'personal_list' %}">My Recipes</a></li>
+            <li><a href="{% url 'personal_list' %}">Saved Recipes</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+            {% else %}
+            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+            <li><a href="{% url 'login' %}">Log In</a></li>
+            {% endif %}
         </ul>
       </div>
     </nav>
