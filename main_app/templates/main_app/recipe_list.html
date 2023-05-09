@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1>Recipe List</h1>
-
+<button><a href="{% url 'recipe_create' %}">Add New Recipe</a></button>
 {% for recipe in recipe_list %}
   <a href="{% url 'recipe_detail' recipe.id %}">
     <div class="card">

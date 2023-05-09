@@ -13,3 +13,8 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return reverse('recipe_detail', kwargs={'pk': self.id})
+
+class Saved(models.Model):
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE
+    )

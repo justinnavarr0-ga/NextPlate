@@ -15,7 +15,11 @@
   </div>
   {% else %}
   <div class="card-action">
-    <a href="">Save Recipe </a>
+    <form action="{% url 'recipe_save' recipe.id %}" method="POST">
+      {% csrf_token %}
+      <!-- Render the inputs -->
+      <input type="submit" class="btn" value="Save Recipe">
+    </form>
   </div>
   {% endif %}
 </div>

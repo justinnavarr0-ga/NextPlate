@@ -20,9 +20,8 @@
             
             {% if user.is_authenticated %}
             <li><a href="{% url 'recipe_index' %}">View All Recipes</a></li>
-            <li><a href="{% url 'recipe_create' %}">Add New Recipe</a></li>
             <li><a href="{% url 'personal_list' %}">My Recipes</a></li>
-            <li><a href="{% url 'personal_list' %}">Saved Recipes</a></li>
+            <li><a href="{% url 'saved_list' %}">Saved Recipes</a></li>
             <li><a href="{% url 'logout' %}">Log Out</a></li>
             {% else %}
             <li><a href="{% url 'about' %}">About</a></li>

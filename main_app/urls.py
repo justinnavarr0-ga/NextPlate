@@ -5,8 +5,10 @@ urlpatterns = [
   path('', views.home, name='home'),
   path('about/', views.about, name='about'),
   path('recipes/myrecipes/', views.PersonalList.as_view(), name='personal_list'),
+  
   path('recipes/', views.RecipesList.as_view(), name='recipe_index'),
-  path('recipes/saved', views.SavedRecipes.as_view(), name='recipe_list'),
+  path('recipes/saved/', views.SavedRecipes.as_view(), name='saved_list'),
+  path('recipes/<int:recipe_id>/saved/', views.add_to_saved, name='recipe_save'),
   path('recipes/create/', views.RecipeCreate.as_view(), name='recipe_create'),
   path('recipes/<int:pk>/', views.RecipeDetail.as_view(), name='recipe_detail'),
   path('recipes/<int:pk>/update/', views.RecipeUpdate.as_view(), name='recipe_update'),
