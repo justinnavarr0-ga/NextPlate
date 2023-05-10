@@ -1,7 +1,12 @@
 from django.forms import ModelForm
-from .models import Ingredients
+from .models import RecipeIngredients, SavedRecipes
 
 class IngredientForm(ModelForm):
     class Meta:
-        model = Ingredients
-        fields = ['amount', 'measurement', 'name']
+        model = RecipeIngredients
+        fields = ['name', 'amount', 'measurement']
+
+class SavedRecipeForm(ModelForm):
+    class Meta:
+        model = SavedRecipes
+        fields = ['recipes']

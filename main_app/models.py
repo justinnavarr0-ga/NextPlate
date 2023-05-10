@@ -20,11 +20,11 @@ from django.contrib.auth.models import User
 
 
 
-# Create your models here.
 class Recipe(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ingredients = models.ManyToManyField('Ingredients', through='RecipeIngredients')
 
     def __str__(self):
         return self.name
@@ -32,18 +32,47 @@ class Recipe(models.Model):
     def get_absolute_url(self):
         return reverse('recipe_detail', kwargs={'pk': self.id})
 
+
 class Ingredients(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+    @property
+    def ingredient_name(self):
+        return self.name
+    class Meta:
+        ordering = ['-name']
+    
+
+class RecipeIngredients(models.Model):
+    name = models.CharField(max_length=50, blank=True)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
     amount = models.FloatField()
     measurement = models.CharField(max_length=6)
-    name = models.CharField(max_length=50)
-    recipe = models.ForeignKey(
+
+    def __str__(self):
+        return f"{self.amount} {self.measurement} of {self.name}"
+    
+    def save(self, *args, **kwargs):
+        # Check if the ingredient with the given name already exists in the database
+        ingredient, create = Ingredients.objects.get_or_create(name=self.name)
+        self.ingredient = ingredient
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('recipe_detail', kwargs={'pk': self.id})
+
+
+
+class SavedRecipes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipes = models.ForeignKey(
         Recipe, on_delete=models.CASCADE
     )
     def __str__(self):
-        return f"{self.amount} {self.get_measurement_display()} of {self.name}"
-    class Meta:
-        ordering = ['-name']
+        return f"{self.recipes}"
 
+    def get_absolute_url(self):
+        return reverse('savedrecipes_detail', kwargs={'pk': self.id})
 
-class Saved(models.Model):
-    name = models.CharField(max_length=100)
