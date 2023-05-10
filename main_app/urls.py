@@ -18,12 +18,11 @@ urlpatterns = [
   path('recipes/savedrecipes/<int:pk>/', views.SavedRecipeDetail.as_view(), name='savedrecipes_detail'),
 
 
-
-#   Add ingredients
-  path('recipes/<int:recipe_id>/ingredients/', views.IngredientList.as_view(), name='recipeingredients_list'),
-  path('recipes/<int:recipe_id>/ingredients/<int:pk>/', views.IngredientDetail.as_view(), name='ingredient_detail'),
-  path('recipes/<int:recipe_id>/ingredients/add_ingredient/', views.IngredientAdd.as_view(), name='ingredient_add'),  
-  path('recipes/<int:recipe_id>/ingredients/<int:pk>/edit_ingredient/', views.IngredientEdit.as_view(), name='ingredient_edit'),  
-  path('recipes/<int:recipe_id>/ingredients/<int:pk>/remove_ingredient/', views.IngredientRemove.as_view(), name='ingredient_remove'),
+#   Add ingredients to a Recipe
+  path('recipes/<int:recipe_id>/ingredients/', views.RecipeIngredientList.as_view(), name='recipeingredients_list'),
+  path('recipes/<int:recipe_id>/ingredients/add_ingredient/', views.RecipeIngredientAdd.as_view(), name='ingredient_add'),  
+  path('recipes/<int:recipe_id>/ingredients/<int:pk>/', views.RecipeIngredientDetail.as_view(), name='ingredient_detail'),
+  path('recipes/<int:recipe_id>/ingredients/<int:pk>/edit_ingredient/', views.RecipeIngredientEdit.as_view(), name='ingredient_edit'),  
+  path('recipes/<int:recipe_id>/ingredients/<int:pk>/remove_ingredient/', views.RecipeIngredientRemove.as_view(), name='ingredient_remove'),
   path('accounts/signup/', views.signup, name='signup'),
 ]

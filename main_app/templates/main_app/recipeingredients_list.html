@@ -1,3 +1,17 @@
-<h1>hi</h1>
-    
-    <h1>{{recipe_ingredients_set.all}}</h1>
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Ingredients for Recipe</h1>
+
+
+{%for object in object_list%}
+<a href="{% url 'ingredient_detail' object.recipe.id object.id %}">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">{{object.amount}}{{object.measurement}} of {{ object.name }} {{object.recipe}} {{object.ingredient}} </span>
+        </div>
+    </div>
+</a>
+{% endfor %}
+
+{% endblock %}

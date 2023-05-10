@@ -35,19 +35,22 @@ class Recipe(models.Model):
 
 class Ingredients(models.Model):
     name = models.CharField(max_length=50)
+    amount = models.FloatField()
+    measurement = models.CharField(max_length=6)
+    
     def __str__(self):
         return self.name
-    @property
-    def ingredient_name(self):
-        return self.name
+    # @property
+    # def ingredient_name(self):
+    #     return self.name
     class Meta:
         ordering = ['-name']
-    
+
 
 class RecipeIngredients(models.Model):
     name = models.CharField(max_length=50, blank=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE, null=True)
     amount = models.FloatField()
     measurement = models.CharField(max_length=6)
 
@@ -56,12 +59,12 @@ class RecipeIngredients(models.Model):
     
     def save(self, *args, **kwargs):
         # Check if the ingredient with the given name already exists in the database
-        ingredient, create = Ingredients.objects.get_or_create(name=self.name)
+        ingredient = Ingredients.objects.create(name=self.name, amount=self.amount, measurement=self.measurement)
         self.ingredient = ingredient
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('recipe_detail', kwargs={'pk': self.id})
+        return reverse('ingredient_detail', kwargs={'pk': self.id})
 
 
 

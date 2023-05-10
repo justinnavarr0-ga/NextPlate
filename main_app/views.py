@@ -34,19 +34,20 @@ class RecipeDetail(FormMixin, DetailView):
     model = Recipe
     form_class = IngredientForm
     template_name = 'main_app/recipe_detail.html'
-
+    def get_form(self):
+        form = super().get_form()
+        form.instance.recipe = self.object
+        return form
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.get_form()
         return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['ingredients'] = self.object.ingredients.all()
+        context['recipeingredients'] = RecipeIngredients.objects.all()
+        print(context['recipeingredients'])
         return context
-    def get_form(self):
-        form = super().get_form()
-        form.instance.recipe = self.object
-        return form
+    
 
 class RecipeCreate(CreateView):
     model = Recipe
@@ -67,15 +68,28 @@ class RecipeDelete(DeleteView):
     model = Recipe
     success_url = '/recipes'
 
-class IngredientList(ListView):
+class RecipeIngredientList(ListView):
     model = RecipeIngredients
-    template_name = 'main_app/recipe_detail.html'
+    template_name = 'main_app/recipeingredients_list.html'
 
-class IngredientDetail(DetailView):
+    def get_queryset(self):
+        recipe_id = self.kwargs['recipe_id']
+        queryset = RecipeIngredients.objects.filter(recipe_id=recipe_id)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe_id = self.kwargs['recipe_id']
+        recipe = Recipe.objects.get(id=recipe_id)
+        context['recipe'] = recipe
+        return context
+
+class RecipeIngredientDetail(DetailView):
     model = RecipeIngredients
     template_name = 'main_app/ingredient_detail.html'
+   
 
-class IngredientAdd(FormView):
+class RecipeIngredientAdd(FormView):
     form_class = IngredientForm
     template_name = 'main_app/add_ingredient.html'
     def form_valid(self, form):
@@ -89,21 +103,33 @@ class IngredientAdd(FormView):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
-class IngredientRemove(DeleteView):
+class RecipeIngredientRemove(DeleteView):
     model = RecipeIngredients
-    template_name = 'main_app/ingredient_confirm_delete.html'
+    template_name = 'main_app/recipe_detail.html'
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
+        print(self.kwargs)
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
-class IngredientEdit(UpdateView):
+
+# dont use this yet
+class RecipeIngredientEdit(UpdateView):
     model = RecipeIngredients
-    form_class = IngredientForm
+    fields = ['name', 'amount', 'measurement']
     template_name = 'main_app/edit_ingredient.html'
-
+    def form_valid(self, form):
+        recipe_id = self.kwargs['recipe_id']
+        new_ingredient = form.save(commit=False)
+        new_ingredient.recipe_id = recipe_id
+        new_ingredient.save()
+        return super().form_valid(form)
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
-        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+        return reverse('ingredient_edit', kwargs={'pk': recipe_id})
+
+
+
+# SAVED
 
 class SavedList(ListView):
     model = SavedRecipes

@@ -27,17 +27,17 @@
     <table class="striped">
       <thead>
         <tr>
-          <th>Ingredients</th>
+          <th><a href="{% url 'recipeingredients_list' recipe.id %}">Ingredients</a></th>
           {% if user == recipe.user %}
-          <th>Remove/Edit</th>
+          <th>Remove</th>
           {% endif %}
         </tr>
       </thead>
       <tbody>
-        {{ingredients}}
-        {% for item in recipe.ingredients_set.all %}
+        {{object}}
+        {% for item in recipeingredients %}
         <tr>
-          <td><a href="{% url 'ingredient_detail' recipe.id item.id %}">{{item.amount}} {{item.measurement}} of {{item.name}}</a></td>
+          <td>{{item.amount}} {{item.measurement}} of {{item.name}} </td>
           <td>
             <div class="row">
               <div class="col">
@@ -48,10 +48,10 @@
                 </form>
               </div>
               <div class="col">
-                <form action="{% url 'ingredient_edit' recipe.id item.id %}" method="POST">
+                <!-- <form action="{% url 'ingredient_edit' recipe.id item.id %}" method="POST">
                   {% csrf_token %}
                   <input type="submit" class="btn" value="Edit">
-                </form>
+                </form> -->
                 {% endif %}
               </div>
             </div>
