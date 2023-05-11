@@ -9,6 +9,7 @@ urlpatterns = [
   path('recipes/<int:pk>/', views.RecipeDetail.as_view(), name='recipe_detail'),
   path('recipes/<int:pk>/update/', views.RecipeUpdate.as_view(), name='recipe_update'),
   path('recipes/<int:pk>/delete/', views.RecipeDelete.as_view(), name='recipe_delete'),
+  path('recipes/<int:recipe_id>/add_photo/', views.add_photo, name='add_photo'),
   
 #  Add Instruction to a recipe
   path('recipes/<int:recipe_id>/instructions/', views.InstructionsList.as_view(), name='instructions_list'),
