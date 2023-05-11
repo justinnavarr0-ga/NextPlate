@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin, FormView
-from .models import Recipe, SavedRecipes, RecipeIngredients, RecipeInstructions, Photo
+from .models import Ingredients, Recipe, SavedRecipes, RecipeIngredients, RecipeInstructions, Photo
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .forms import IngredientForm, SavedRecipeForm, InstructionForm

@@ -8,7 +8,7 @@
     <div class="card">
     {% for photo in recipe.photo_set.all %}
       <img class="responsive-img card-panel" src="{{photo.url}}">
-    {% empty %}
+      {% empty %}
       <div class="card-panel teal-text center-align">No Photos Uploaded</div>
     {% endfor %}
     {% if user == recipe.user %}
@@ -23,11 +23,17 @@
           <a href="{% url 'recipe_update' recipe.id %}">Edit</a>
           <a href="{% url 'recipe_delete' recipe.id %}">Delete</a>
         </div>
-    {% endif %}
+        <div class="card-content">
+          <span class="card-title">{{ recipe.name }}</span>
+          <p>Description: {{ recipe.description }}</p>
+        </div>
+    {% else %}
       <div class="card-content">
         <span class="card-title">{{ recipe.name }}</span>
         <p>Description: {{ recipe.description }}</p>
       </div>
+    {% endif %}
+      
   </div>
   <div class="col s8">
     <table class="striped">
@@ -36,11 +42,14 @@
           <th>Ingredients</th>
           {% if user == recipe.user %}
           <th>Remove/Edit</th>
+          {% else %}
+          <th></th>
           {% endif %}
         </tr>
       </thead>
+      
+      {% for item in recipeingredients %}
       <tbody>
-        {% for item in recipeingredients %}
           <tr>
             <td>{{item.amount}} {{item.measurement}} of {{item.name}} </td>
             <td>
@@ -58,12 +67,13 @@
                       <input type="submit" class="btn" value="Edit">
                     </form>
                   </div>
+                {% else %}
                 {% endif %}
               </div>
             </td>
           </tr>
-        {% endfor %}
       </tbody> 
+        {% endfor %}
     </table>
   </div>
 
@@ -88,10 +98,12 @@
         <a href="{% url 'instructions_list' recipe.id %}"> 
           <div class="card">
               <div class="card-content">
+                {% if user == recipe.user %}
                   <form action="{% url 'instruction_delete' recipeinstructions.id instructions.id %}" method="POST">
                     {% csrf_token %}
                     <input type="submit" class="btn" value="Remove">
                   </form>
+                {% endif %}
                   <span class="card-title">Step {{instructions.step}}: {{instructions}} </span> 
               </div>
           </div>
