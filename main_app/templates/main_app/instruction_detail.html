@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Instructions 2 For This Recipe</h1>
+<h1>{{object}}</h1>
+<h2>{{recipe}}</h2>
 
-
+{{object.description}}
+{{object.recipeingredients_set}}
 
 
 {% endblock %}

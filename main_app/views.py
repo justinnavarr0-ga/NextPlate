@@ -1,6 +1,7 @@
 import os
 import uuid
 import boto3
+import requests
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
@@ -46,12 +47,14 @@ class RecipeDetail(FormMixin, DetailView):
     def get_context_data(self, **kwargs):
         print(self.object)
         context = super().get_context_data(**kwargs)
-        recipe_instructions= Recipe.objects.get(id=self.object.id)
+        Rinstructions= RecipeInstructions.objects.filter(recipe=self.object.id)
+        recipe= Recipe.objects.get(id=self.object.id)
         recipe_ingredients = RecipeIngredients.objects.filter(recipe=self.object)
         context['form'] = self.get_form()
         context['instructform'] = self.get_instructform()
         context['recipeingredients'] = recipe_ingredients
-        context['recipeinstructions'] = recipe_instructions
+        context['recipe'] = recipe
+        context['recipeinstructions'] = Rinstructions
         context['savedrecipeform'] = SavedRecipeForm(initial={'recipe': self.object})
         return context
 
@@ -125,16 +128,25 @@ class RecipeIngredientEdit(UpdateView):
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
+
+
+
 class InstructionsList(ListView):
     model = Recipe
     template_name = 'main_app/instructions_list.html'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         recipe_id = self.kwargs['recipe_id']
         recipe = Recipe.objects.get(id=recipe_id)
-        context['object'] = recipe
+        recipeinstructions= RecipeInstructions.objects.filter(recipe=recipe_id)
+        context['recipe'] = recipe
+        context['recipeinstructions'] = recipeinstructions
         return context
+    def get_success_url(self):
+        recipe_id = self.kwargs['recipe_id']
+        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+
+
 class InstructionCreate(FormView):
     model = Recipe
     template_name = 'main_app/instruction_create.html'
@@ -148,9 +160,20 @@ class InstructionCreate(FormView):
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
+
 class InstructionDetail(DetailView):
     model = RecipeInstructions
     template_name = 'main_app/instruction_detail.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe_id = self.kwargs['recipe_id']
+        recipeinstructions= RecipeInstructions.objects.filter(recipe=self.object.id)
+        recipe = Recipe.objects.get(id=recipe_id)
+        context['recipe'] = recipe
+        context['recipeinstructions'] = recipeinstructions
+        print(context['recipe'])
+        print(context['recipeinstructions'])
+        return context
     def get_queryset(self):
         recipe_id = self.kwargs['recipe_id']
         queryset = Recipe.objects.filter(id=recipe_id)
@@ -164,17 +187,28 @@ class InstructionDetail(DetailView):
 class RemoveInstruction(DeleteView):
     model = RecipeInstructions
     form_class = InstructionForm
-    template_name = 'main_app/instruction_delete.html'
-    def get_queryset(self):
+    template_name = 'main_app/recipe_detail.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         recipe_id = self.kwargs['recipe_id']
-        # Filter the recipes 
-        queryset = Recipe.objects.filter(id=recipe_id)
-        print(queryset)
-        return queryset
+        recipe = Recipe.objects.filter(id=recipe_id)
+        context['recipe'] = recipe
+        context['recipeinstructions'] = RecipeInstructions.objects.filter(recipe=recipe_id)
+        return context
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
     
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -246,3 +280,29 @@ def add_photo(request, recipe_id):
             print('An error occurred uploading file to S3')
             print(e)
     return redirect('recipe_detail', recipe_id=recipe_id)
+
+def findRecipes(request):
+    search = request.GET.get('q', '') 
+    api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
+    response = requests.get(api_url, headers={'X-Api-Key': '2M8GtkaXwrMRVd59Jr1TGQ==98MrEmDix1Hkfvpi'})
+    
+    if response.status_code == requests.codes.ok:
+        recipelist = response.json()  # convert response to JSON object
+        return render(request, 'find.html', {'recipelist': recipelist})
+    else:
+        return render(request, 'find.html')
+
+def foundRecipe(request, recipe_id):
+    search = request.get(recipe_id) 
+    api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
+    response = requests.get(api_url, headers={'X-Api-Key': '2M8GtkaXwrMRVd59Jr1TGQ==98MrEmDix1Hkfvpi'})
+    if response.status_code == requests.codes.ok:
+        recipelist = response.json()  # convert response to JSON object
+        recipe = recipelist[0]  # retrieve first item in list
+        title = recipe['title']  # access title key
+        ingredients = recipe['ingredients']  # access ingredients key
+        servings = recipe['servings']  # access servings key
+        instructions = recipe['instructions']
+        return render(request, 'recipe.html', {'title': title, 'ingredients': ingredients, 'servings': servings, 'instructions': instructions})
+    else:
+        return render(request, 'find.html')

@@ -92,22 +92,25 @@
           <input type="submit" class="btn" value="Add A Step">
         </form>
     {% endif %}
-    
-    {% for instructions in recipeinstructions.recipeinstructions_set.all %}
-    
-        <a href="{% url 'instructions_list' recipe.id %}"> 
+    {{recipe}}
+    {{recipe.id}}
+    {% for everyinstruction in recipeinstructions %}
+    <a href="{% url 'instructions_list' recipe.id %}">Instructions</a>
           <div class="card">
+            {{recipeinstructions.id}}
+            {{everyinstruction.id}}
               <div class="card-content">
                 {% if user == recipe.user %}
-                  <form action="{% url 'instruction_delete' recipeinstructions.id instructions.id %}" method="POST">
+                  <form action="{% url 'delete_instruction' recipe.id everyinstruction.id %}" method="POST">
                     {% csrf_token %}
                     <input type="submit" class="btn" value="Remove">
                   </form>
                 {% endif %}
-                  <span class="card-title">Step {{instructions.step}}: {{instructions}} </span> 
+                  <span class="card-title">
+                    <a href="{% url 'instruction_detail' recipe.id everyinstruction.id %}">Step {{everyinstruction.step}}: {{everyinstruction}}</a>
+                  </span> 
               </div>
           </div>
-        </a> 
     {% endfor %}
   </div> 
 </div>

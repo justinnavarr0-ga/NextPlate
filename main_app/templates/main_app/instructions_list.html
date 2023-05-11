@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Instructions To Cook {{object}}</h1>
+<h1>Instructions To Cook {{recipe}}</h1>
+{{recipe.id}}
+{{recipeinstructions}}
 
-{% for instructions in object.recipeinstructions_set.all %}
+{% for everyinstruction in recipeinstructions %}
     <div class="card">
+        {{recipe.id}}
+        {{everyinstruction.id}}
         <div class="card-content">
-               <span class="card-title"> <a href="{% url 'instruction_detail' object.id instructions.id %}">Step {{instructions.step}}: {{instructions}}</a>  </span> 
+               <span class="card-title"> <a href="{% url 'instruction_detail' recipe.id everyinstruction.id %}">Step {{everyinstruction.step}}: {{everyinstruction}}</a>  </span> 
         </div>
     </div>
 {% endfor %}

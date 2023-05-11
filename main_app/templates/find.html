@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>NextPlate</h1>
+  <h3>Type in some food and we can find some recipes!!</h3>
+  <form method="get" action="{% url 'find_recipes' %}">
+    <input type="text" name="q">
+    <button type="submit">Search</button>
+  </form>
+
+
+  {% for recipe in recipelist %}
+  <h4>{{ recipe.title }}</h4>
+{% endfor %}
+
+{% endblock %}

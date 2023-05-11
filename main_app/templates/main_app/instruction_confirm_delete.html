@@ -5,9 +5,9 @@
 
   <h4>Are you sure you want to delete <span class="teal-text">{{ object.name }}</span>?</h4>
 
-  <form action="{% url 'instruction_delete' recipe.id %}" method="POST">
+  <form action="" method="POST">
     {% csrf_token %}
     <input type="submit" value="Yes - Delete!" class="btn">
-    <a href="{% url 'instruction_delete' recipe.id %}">Cancel</a>
+    <a href="{% url 'recipe_detail' recipe.id %}">Cancel</a>
   </form>
 {% endblock %}

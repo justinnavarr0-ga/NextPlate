@@ -10,12 +10,14 @@ urlpatterns = [
   path('recipes/<int:pk>/update/', views.RecipeUpdate.as_view(), name='recipe_update'),
   path('recipes/<int:pk>/delete/', views.RecipeDelete.as_view(), name='recipe_delete'),
   path('recipes/<int:recipe_id>/add_photo/', views.add_photo, name='add_photo'),
+  path('recipes/find/', views.findRecipes, name='find_recipes'),
+  path('recipes/find/<int:recipe_id>', views.foundRecipe, name='recipe'),
   
 #  Add Instruction to a recipe
   path('recipes/<int:recipe_id>/instructions/', views.InstructionsList.as_view(), name='instructions_list'),
   path('recipes/<int:recipe_id>/instructions/instruction_create/', views.InstructionCreate.as_view(), name='instruction_create'),
   path('recipes/<int:recipe_id>/instructions/<int:pk>/', views.InstructionDetail.as_view(), name='instruction_detail'),
-  path('recipes/<int:recipe_id>/instructions/<int:pk>/instruction_delete/', views.RemoveInstruction.as_view(), name='instruction_delete'),
+  path('recipes/<int:recipe_id>/instructions/<int:pk>/instruction_delete/', views.RemoveInstruction.as_view(), name='delete_instruction'),
   
   
 
