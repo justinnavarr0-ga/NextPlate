@@ -8,6 +8,7 @@
   <title>NextPlate</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </head>
 <body>
   <header class="navbar-fixed">
@@ -21,7 +22,7 @@
             {% if user.is_authenticated %}
             <li><a href="{% url 'recipe_index' %}">View All Recipes</a></li>
             <li><a href="{% url 'personal_list' %}">My Recipes</a></li>
-            <li><a href="{% url 'savedrecipes_list' %}">Saved Recipes</a></li>
+            
             <li><a href="{% url 'logout' %}">Log Out</a></li>
             {% else %}
             <li><a href="{% url 'about' %}">About</a></li>

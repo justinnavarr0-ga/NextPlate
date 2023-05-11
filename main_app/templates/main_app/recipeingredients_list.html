@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Ingredients for Recipe</h1>
+<h1>Ingredients For This Recipe</h1>
 
 
 {%for object in object_list%}
 <a href="{% url 'ingredient_detail' object.recipe.id object.id %}">
     <div class="card">
         <div class="card-content">
-            <span class="card-title">{{object.amount}}{{object.measurement}} of {{ object.name }} {{object.recipe}} {{object.ingredient}} </span>
+            <span class="card-title">{{object.amount}} {{object.measurement}} of {{ object.name }} </span>
         </div>
     </div>
 </a>

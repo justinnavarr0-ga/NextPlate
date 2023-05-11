@@ -2,11 +2,12 @@
 {% block content %}
 
 <h1>My Saved Recipes</h1>
-
+<h1>{{object_list}}</h1>
 {% for saved_recipe in object_list %}
 <div class="card">
   <div class="card-content">
-      <a href="{% url 'recipe_detail' saved_recipe.id %}">
+      <!-- <a href="{% url 'recipe_detail' saved_recipe.id %}"> -->
+      <a href="{% url 'savedrecipes_detail' saved_recipe.id %}">
         <span class="card-title">{{ saved_recipe }}</span>
       </a>
   </div>

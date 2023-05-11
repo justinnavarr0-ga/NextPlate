@@ -2,21 +2,22 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-# MEASUREMENTS = (
-#     ('oz', 'ounce'),
-#     ('g', 'gram'),
-#     ('lb', 'pound'),
-#     ('kg', 'kilogram'),
-#     ('pinch', 'pinch'),
-#     ('l', 'liter'),
-#     ('gal', 'Gallon'),
-#     ('pint', 'Pint'),
-#     ('qt', 'Quart'),
-#     ('ml', 'Mililiter'),
-#     ('cup', 'Cup'),
-#     ('tbsp', 'tablespoon'),
-#     ('tsp', 'teaspoon'),
-# )
+MEASUREMENTS = (
+    ('oz', 'ounce'),
+    ('g', 'gram'),
+    ('lb', 'pound'),
+    ('kg', 'kilogram'),
+    ('pinch', 'pinch'),
+    ('l', 'liter'),
+    ('gal', 'Gallon'),
+    ('pint', 'Pint'),
+    ('qt', 'Quart'),
+    ('ml', 'Mililiter'),
+    ('cup', 'Cup'),
+    ('tbsp', 'tablespoon'),
+    ('tsp', 'teaspoon'),
+    ('pieces', 'pieces'),
+)
 
 
 
@@ -36,13 +37,10 @@ class Recipe(models.Model):
 class Ingredients(models.Model):
     name = models.CharField(max_length=50)
     amount = models.FloatField()
-    measurement = models.CharField(max_length=6)
+    measurement = models.CharField(max_length=6, choices=MEASUREMENTS, default=MEASUREMENTS[0][0])
     
     def __str__(self):
         return self.name
-    # @property
-    # def ingredient_name(self):
-    #     return self.name
     class Meta:
         ordering = ['-name']
 
@@ -52,7 +50,7 @@ class RecipeIngredients(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE, null=True)
     amount = models.FloatField()
-    measurement = models.CharField(max_length=6)
+    measurement = models.CharField(max_length=6, choices=MEASUREMENTS, default=MEASUREMENTS[0][0])
 
     def __str__(self):
         return f"{self.amount} {self.measurement} of {self.name}"
@@ -65,6 +63,41 @@ class RecipeIngredients(models.Model):
 
     def get_absolute_url(self):
         return reverse('ingredient_detail', kwargs={'pk': self.id})
+
+class RecipeInstructions(models.Model):
+    step = models.IntegerField()
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    directions = models.TextField(max_length=250)
+    objects = models.Manager()
+    def __str__(self):
+        return self.directions
+        
+    def get_absolute_url(self):
+        return reverse('instruction_detail', kwargs={'pk': self.id})
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

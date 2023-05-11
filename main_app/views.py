@@ -2,21 +2,19 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin, FormView
-from .models import Recipe, Ingredients, SavedRecipes, RecipeIngredients
+from .models import Recipe, SavedRecipes, RecipeIngredients, RecipeInstructions
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .forms import IngredientForm, SavedRecipeForm
-from django.urls import reverse
+from .forms import IngredientForm, SavedRecipeForm, InstructionForm
+from django.urls import reverse, reverse_lazy
 
 
 # Create your views here.
 def home(request):
   # Include an .html file extension - unlike when rendering EJS templates
   return render(request, 'home.html')
-
 def about(request):
   return render(request, 'about.html')
-
 class PersonalList(ListView):
     model = Recipe
     template_name = 'main_app/personal_list.html'
@@ -26,68 +24,68 @@ class PersonalList(ListView):
         # Filter the recipes by user
         queryset = Recipe.objects.filter(user=user)
         return queryset
-
 class RecipesList(ListView):
     model = Recipe
 
 class RecipeDetail(FormMixin, DetailView):
     model = Recipe
-    form_class = IngredientForm
     template_name = 'main_app/recipe_detail.html'
     def get_form(self):
-        form = super().get_form()
+        form_class = IngredientForm
+        form = super().get_form(form_class=form_class)
         form.instance.recipe = self.object
         return form
+    def get_instructform(self):
+        form_class2 = InstructionForm
+        instructform = super().get_form(form_class=form_class2)
+        instructform.instance.recipe = self.object
+        return instructform
     def get_context_data(self, **kwargs):
+        print(self.object)
         context = super().get_context_data(**kwargs)
+        recipe_instructions= Recipe.objects.get(id=self.object.id)
+        recipe_ingredients = RecipeIngredients.objects.filter(recipe=self.object)
         context['form'] = self.get_form()
+        context['instructform'] = self.get_instructform()
+        context['recipeingredients'] = recipe_ingredients
+        context['recipeinstructions'] = recipe_instructions
+        context['savedrecipeform'] = SavedRecipeForm(initial={'recipe': self.object})
         return context
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['recipeingredients'] = RecipeIngredients.objects.all()
-        print(context['recipeingredients'])
-        return context
-    
+
+
 
 class RecipeCreate(CreateView):
     model = Recipe
     fields = ['name', 'description']
-
     def form_valid(self, form):
         # Assign the logged in user (self.request.user)
         form.instance.user = self.request.user  # form.instance is the recipe
         # Let the CreateView do its job as usual
         return super().form_valid(form)
     success_url = '/recipes'
-
 class RecipeUpdate(UpdateView):
     model = Recipe
     fields = ['name', 'description']
-
 class RecipeDelete(DeleteView):
     model = Recipe
     success_url = '/recipes'
-
 class RecipeIngredientList(ListView):
     model = RecipeIngredients
     template_name = 'main_app/recipeingredients_list.html'
-
     def get_queryset(self):
         recipe_id = self.kwargs['recipe_id']
         queryset = RecipeIngredients.objects.filter(recipe_id=recipe_id)
         return queryset
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         recipe_id = self.kwargs['recipe_id']
         recipe = Recipe.objects.get(id=recipe_id)
         context['recipe'] = recipe
         return context
-
 class RecipeIngredientDetail(DetailView):
     model = RecipeIngredients
     template_name = 'main_app/ingredient_detail.html'
-   
+
 
 class RecipeIngredientAdd(FormView):
     form_class = IngredientForm
@@ -103,6 +101,7 @@ class RecipeIngredientAdd(FormView):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
+
 class RecipeIngredientRemove(DeleteView):
     model = RecipeIngredients
     template_name = 'main_app/recipe_detail.html'
@@ -110,9 +109,6 @@ class RecipeIngredientRemove(DeleteView):
         recipe_id = self.kwargs['recipe_id']
         print(self.kwargs)
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
-
-
-# dont use this yet
 class RecipeIngredientEdit(UpdateView):
     model = RecipeIngredients
     fields = ['name', 'amount', 'measurement']
@@ -125,7 +121,58 @@ class RecipeIngredientEdit(UpdateView):
         return super().form_valid(form)
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
-        return reverse('ingredient_edit', kwargs={'pk': recipe_id})
+        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+class InstructionsList(ListView):
+    model = Recipe
+    template_name = 'main_app/instructions_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe_id = self.kwargs['recipe_id']
+        recipe = Recipe.objects.get(id=recipe_id)
+        context['object'] = recipe
+        return context
+class InstructionCreate(FormView):
+    model = Recipe
+    template_name = 'main_app/instruction_create.html'
+    form_class = InstructionForm
+    def form_valid(self, form):
+        recipe_id = self.kwargs['recipe_id']
+        new_instruction = form.save(commit=False)
+        new_instruction.recipe_id = recipe_id
+        new_instruction.save()
+        return super().form_valid(form)
+    def get_success_url(self):
+        recipe_id = self.kwargs['recipe_id']
+        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+class InstructionDetail(DetailView):
+    model = RecipeInstructions
+    template_name = 'main_app/instruction_detail.html'
+    def get_queryset(self):
+        recipe_id = self.kwargs['recipe_id']
+        queryset = Recipe.objects.filter(id=recipe_id)
+        print(queryset)
+        return queryset
+    def get_success_url(self):
+        recipe_id = self.kwargs['recipe_id']
+        return reverse('instruction_detail', kwargs={'pk': recipe_id})
+
+
+class RemoveInstruction(DeleteView):
+    model = RecipeInstructions
+    form_class = InstructionForm
+    template_name = 'main_app/instruction_delete.html'
+    def get_queryset(self):
+        recipe_id = self.kwargs['recipe_id']
+        # Filter the recipes 
+        queryset = Recipe.objects.filter(id=recipe_id)
+        print(queryset)
+        return queryset
+    def get_success_url(self):
+        recipe_id = self.kwargs['recipe_id']
+        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+    
+
 
 
 
@@ -134,24 +181,29 @@ class RecipeIngredientEdit(UpdateView):
 class SavedList(ListView):
     model = SavedRecipes
     template_name = 'main_app/savedrecipe_list.html'
-
+    def get_queryset(self):
+        # Get the current user
+        user = self.request.user
+        # Filter the recipes by user
+        queryset = SavedRecipes.objects.filter(user=user)
+        return queryset
 class SavedRecipeDetail(DetailView):
-    model = Recipe
+    model = SavedRecipes
 
-class SavedRecipe(FormView):
+class SaveThisRecipe(CreateView):
+    model = SavedRecipes
     form_class = SavedRecipeForm
-    template_name = 'main_app/add_recipe.html'
+    success_url = reverse_lazy('main_app/savedrecipes_list')
 
     def form_valid(self, form):
-        recipe_id = self.kwargs['recipe_id']
-        new_saved_recipe = form.save(commit=False)
-        new_saved_recipe.recipe_id = recipe_id
-        new_saved_recipe.save()
+        # pre-populate the form with the recipe and the current user
+        form.instance.user = self.request.user
+        form.instance.recipes = Recipe.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
+    
+#SAVED
 
-    def get_success_url(self):
-        recipe_id = self.kwargs['recipe_id']
-        return reverse('saved_recipe_list', kwargs={'pk': recipe_id})
+
 
 def signup(request):
   error_message = ''
