@@ -23,7 +23,7 @@ MEASUREMENTS = (
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=250)
+    description = models.TextField(max_length=500)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ingredients = models.ManyToManyField('Ingredients', through='RecipeIngredients')
 
@@ -82,29 +82,6 @@ class Photo(models.Model):
 
     def get_absolute_url(self):
         return reverse('recipe_detail', kwargs={'recipe_id': self.id})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class SavedRecipes(models.Model):

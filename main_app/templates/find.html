@@ -10,11 +10,12 @@
 
 
   {% for recipe in recipelist %}
-  {{recipenumber}}
-<h4>{{ recipe.title }}</h4>
-<h4>{{ recipe.ingredients  }}</h4>
-<h4>{{ recipe.instructions  }}</h4>
-
+  {{ingredient}}
+  <div class="card">
+    <div class="card-content">
+    <a href="{% url 'recipe' recipe.title %}"><span class="card-title">{{ recipe.title }}</span></a>
+  </div>
+  </div>
   
 {% endfor %}
 

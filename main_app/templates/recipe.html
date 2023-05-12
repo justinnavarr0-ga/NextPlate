@@ -1,9 +1,20 @@
 {% extends 'base.html' %}
-
 {% block content %}
-  <h1>{{title}}</h1>
-    <h4>{{ingredients}}</h4>
-    <h4>{{servings}}</h4>
-    <h4>{{instructions}}</h4>
+
+<h1>{{title}}</h1>
+<div class="card">
+    <div class="card-content">
+    <span class="card-title">{{ title }}</span>
+    <p>Ingredients: {{ ingredients}}</p>
+    <p>Instructions: {{ instructions }}</p>
+  </div>
+  </div>
+  <form action="{% url 'savedrecipes_create' title %}" method="POST">
+    {% csrf_token %}
+    <input type="text" name="name" value="{{title}}">
+    <input type="text" name="description" value="{{ingredients}}">
+    <input type="submit" value="Save Recipe" class="btn">
+  </form>
+
 
 {% endblock %}

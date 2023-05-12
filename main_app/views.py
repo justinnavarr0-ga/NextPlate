@@ -200,48 +200,6 @@ class RemoveInstruction(DeleteView):
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
     
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# SAVED
-
-class SavedList(ListView):
-    model = SavedRecipes
-    template_name = 'main_app/savedrecipe_list.html'
-    def get_queryset(self):
-        # Get the current user
-        user = self.request.user
-        # Filter the recipes by user
-        queryset = SavedRecipes.objects.filter(user=user)
-        return queryset
-class SavedRecipeDetail(DetailView):
-    model = SavedRecipes
-
-class SaveThisRecipe(CreateView):
-    model = SavedRecipes
-    form_class = SavedRecipeForm
-    success_url = reverse_lazy('main_app/savedrecipes_list')
-
-    def form_valid(self, form):
-        # pre-populate the form with the recipe and the current user
-        form.instance.user = self.request.user
-        form.instance.recipes = Recipe.objects.get(pk=self.kwargs['pk'])
-        return super().form_valid(form)
-    
-#SAVED
-
-
-
 def signup(request):
   error_message = ''
   if request.method == 'POST':
@@ -292,17 +250,65 @@ def findRecipes(request):
     else:
         return render(request, 'find.html')
 
-def foundRecipe(request, recipe_id):
-    search = request.get(recipe_id) 
+def foundRecipe(request, query):
+    search = query
     api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
     response = requests.get(api_url, headers={'X-Api-Key': '2M8GtkaXwrMRVd59Jr1TGQ==98MrEmDix1Hkfvpi'})
     if response.status_code == requests.codes.ok:
         recipelist = response.json()  # convert response to JSON object
-        recipe = recipelist[0]  # retrieve first item in list
-        title = recipe['title']  # access title key
-        ingredients = recipe['ingredients']  # access ingredients key
-        servings = recipe['servings']  # access servings key
-        instructions = recipe['instructions']
-        return render(request, 'recipe.html', {'title': title, 'ingredients': ingredients, 'servings': servings, 'instructions': instructions})
+        if recipelist:
+            recipe = recipelist[0] # retrieve matching item in list
+            title = recipe['title']  # access title key
+            ingredients = recipe['ingredients']  # access ingredients key
+            instructions = recipe['instructions']
+            return render(request, 'recipe.html', {'title': title, 'ingredients': ingredients, 'instructions': instructions})
+        else: 
+            recipelist = "Sorry This Recipe No Longer Exists!"
+            return render(request, 'recipe.html', {'title': recipelist})
     else:
         return render(request, 'find.html')
+
+
+
+# SAVED
+
+class SavedList(ListView):
+    model = SavedRecipes
+    template_name = 'main_app/savedrecipe_list.html'
+    def get_queryset(self):
+        # Get the current user
+        user = self.request.user
+        # Filter the recipes by user
+        queryset = SavedRecipes.objects.filter(user=user)
+        return queryset
+class SavedRecipeDetail(DetailView):
+    model = SavedRecipes
+
+class SaveThisRecipe(CreateView):
+    model = Recipe
+    fields = ['name', 'description']
+    def form_valid(self, form):
+        # pre-populate the form with the recipe and the current user
+        form.instance.user = self.request.user
+        search = form.instance.name
+        api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
+        response = requests.get(api_url, headers={'X-Api-Key': '2M8GtkaXwrMRVd59Jr1TGQ==98MrEmDix1Hkfvpi'})
+        if response.status_code == requests.codes.ok:
+            recipelist = response.json()  # convert response to JSON object
+            if recipelist:
+                recipe = recipelist[0] # retrieve matching item in list
+                form.instance.name = recipe['title']  # access title key
+                form.instance.description = recipe['ingredients']  # access ingredients key
+                    
+            else: 
+                form.instance.name = "Sorry, This Recipe No Longer Exists!"
+        return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('q')
+        if search is not None:
+            return self.form_valid(self.get_form(), query=search)
+        else:
+            return super().get(request, *args, **kwargs)
+    
+#SAVED

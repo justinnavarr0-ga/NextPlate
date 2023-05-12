@@ -11,7 +11,7 @@ urlpatterns = [
   path('recipes/<int:pk>/delete/', views.RecipeDelete.as_view(), name='recipe_delete'),
   path('recipes/<int:pk>/add_photo/', views.add_photo, name='add_photo'),
   path('recipes/find/', views.findRecipes, name='find_recipes'),
-  path('recipes/find/<int:recipe_id>', views.foundRecipe, name='recipe'),
+  path('recipes/find/<str:query>', views.foundRecipe, name='recipe'),
   
 #  Add Instruction to a recipe
   path('recipes/<int:recipe_id>/instructions/', views.InstructionsList.as_view(), name='instructions_list'),
@@ -34,8 +34,8 @@ urlpatterns = [
 #   My Recipes  
   path('recipes/myrecipes/', views.PersonalList.as_view(), name='personal_list'),
 #   Saved Recipes  
-  # path('recipes/savedrecipes/', views.SavedList.as_view(), name='savedrecipes_list'),
-  # path('recipes/<int:pk>/savedrecipes/create', views.SaveThisRecipe.as_view(), name='saved_recipes_add'),
+  path('recipes/savedrecipes/', views.SavedList.as_view(), name='savedrecipes_list'),
+  path('recipes/find/<str:query>/savedrecipes/create', views.SaveThisRecipe.as_view(), name='savedrecipes_create'),
   # path('recipes/<int:pk>/savedrecipes/<int:pk>', views.SavedRecipeDetail.as_view(), name='savedrecipes_detail'),
 
 
