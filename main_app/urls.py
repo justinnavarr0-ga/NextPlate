@@ -9,7 +9,7 @@ urlpatterns = [
   path('recipes/<int:pk>/', views.RecipeDetail.as_view(), name='recipe_detail'),
   path('recipes/<int:pk>/update/', views.RecipeUpdate.as_view(), name='recipe_update'),
   path('recipes/<int:pk>/delete/', views.RecipeDelete.as_view(), name='recipe_delete'),
-  path('recipes/<int:recipe_id>/add_photo/', views.add_photo, name='add_photo'),
+  path('recipes/<int:pk>/add_photo/', views.add_photo, name='add_photo'),
   path('recipes/find/', views.findRecipes, name='find_recipes'),
   path('recipes/find/<int:recipe_id>', views.foundRecipe, name='recipe'),
   

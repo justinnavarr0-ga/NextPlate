@@ -279,7 +279,7 @@ def add_photo(request, recipe_id):
         except Exception as e:
             print('An error occurred uploading file to S3')
             print(e)
-    return redirect('recipe_detail', recipe_id=recipe_id)
+    return redirect('recipe_detail', kwargs={'pk': recipe_id})
 
 def findRecipes(request):
     search = request.GET.get('q', '') 
