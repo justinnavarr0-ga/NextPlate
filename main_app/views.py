@@ -261,7 +261,7 @@ def signup(request):
   context = {'form': form, 'error_message': error_message}
   return render(request, 'registration/signup.html', context)
 
-def add_photo(request, recipe_id):
+def add_photo(request, pk):
     # photo-file will be the "name" attribute on the <input type="file">
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
@@ -275,11 +275,11 @@ def add_photo(request, recipe_id):
             # build the full url string
             url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
             # we can assign to cat_id or cat (if you have a cat object)
-            Photo.objects.create(url=url, recipe_id=recipe_id)
+            Photo.objects.create(url=url, recipe_id=pk)
         except Exception as e:
             print('An error occurred uploading file to S3')
             print(e)
-    return redirect('recipe_detail', kwargs={'pk': recipe_id})
+    return redirect('recipe_detail', pk)
 
 def findRecipes(request):
     search = request.GET.get('q', '') 
