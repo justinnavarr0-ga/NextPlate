@@ -10,7 +10,12 @@
 
 
   {% for recipe in recipelist %}
-  <h4>{{ recipe.title }}</h4>
+  {{recipenumber}}
+<h4>{{ recipe.title }}</h4>
+<h4>{{ recipe.ingredients  }}</h4>
+<h4>{{ recipe.instructions  }}</h4>
+
+  
 {% endfor %}
 
 {% endblock %}
