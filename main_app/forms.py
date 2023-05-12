@@ -15,4 +15,4 @@ class InstructionForm(ModelForm):
 class SavedRecipeForm(ModelForm):
     class Meta:
         model = SavedRecipes
-        fields = ['recipes']
+        fields = ['name', 'ingredients','description']

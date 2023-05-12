@@ -86,12 +86,10 @@ class Photo(models.Model):
 
 class SavedRecipes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipes = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE
-    )
-    def __str__(self):
-        return f"{self.recipes}"
+    name = models.CharField(max_length=100)
+    description = models.TextField(max_length=1000)
+    ingredients = models.TextField(max_length=2000)
 
     def get_absolute_url(self):
-        return reverse('savedrecipes_detail', kwargs={'pk': self.id})
+        return reverse('savedrecipes_list')
 

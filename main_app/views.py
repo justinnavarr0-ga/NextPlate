@@ -11,7 +11,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .forms import IngredientForm, SavedRecipeForm, InstructionForm
 from django.urls import reverse, reverse_lazy
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 def home(request):
@@ -60,7 +60,7 @@ class RecipeDetail(FormMixin, DetailView):
 
 
 
-class RecipeCreate(CreateView):
+class RecipeCreate(LoginRequiredMixin, CreateView):
     model = Recipe
     fields = ['name', 'description']
     def form_valid(self, form):
@@ -69,13 +69,13 @@ class RecipeCreate(CreateView):
         # Let the CreateView do its job as usual
         return super().form_valid(form)
     success_url = '/recipes'
-class RecipeUpdate(UpdateView):
+class RecipeUpdate(LoginRequiredMixin, UpdateView):
     model = Recipe
     fields = ['name', 'description']
-class RecipeDelete(DeleteView):
+class RecipeDelete(LoginRequiredMixin, DeleteView):
     model = Recipe
     success_url = '/recipes'
-class RecipeIngredientList(ListView):
+class RecipeIngredientList(LoginRequiredMixin, ListView):
     model = RecipeIngredients
     template_name = 'main_app/recipeingredients_list.html'
     def get_queryset(self):
@@ -88,12 +88,12 @@ class RecipeIngredientList(ListView):
         recipe = Recipe.objects.get(id=recipe_id)
         context['recipe'] = recipe
         return context
-class RecipeIngredientDetail(DetailView):
+class RecipeIngredientDetail(LoginRequiredMixin, DetailView):
     model = RecipeIngredients
     template_name = 'main_app/ingredient_detail.html'
 
 
-class RecipeIngredientAdd(FormView):
+class RecipeIngredientAdd(LoginRequiredMixin, FormView):
     form_class = IngredientForm
     template_name = 'main_app/add_ingredient.html'
     def form_valid(self, form):
@@ -108,14 +108,14 @@ class RecipeIngredientAdd(FormView):
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
 
-class RecipeIngredientRemove(DeleteView):
+class RecipeIngredientRemove(LoginRequiredMixin, DeleteView):
     model = RecipeIngredients
     template_name = 'main_app/recipe_detail.html'
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
         print(self.kwargs)
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
-class RecipeIngredientEdit(UpdateView):
+class RecipeIngredientEdit(LoginRequiredMixin, UpdateView):
     model = RecipeIngredients
     fields = ['name', 'amount', 'measurement']
     template_name = 'main_app/edit_ingredient.html'
@@ -129,9 +129,7 @@ class RecipeIngredientEdit(UpdateView):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
-
-
-class InstructionsList(ListView):
+class InstructionsList(LoginRequiredMixin, ListView):
     model = Recipe
     template_name = 'main_app/instructions_list.html'
     def get_context_data(self, **kwargs):
@@ -147,7 +145,7 @@ class InstructionsList(ListView):
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
 
-class InstructionCreate(FormView):
+class InstructionCreate(LoginRequiredMixin, FormView):
     model = Recipe
     template_name = 'main_app/instruction_create.html'
     form_class = InstructionForm
@@ -161,7 +159,7 @@ class InstructionCreate(FormView):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
 
-class InstructionDetail(DetailView):
+class InstructionDetail(LoginRequiredMixin, DetailView):
     model = RecipeInstructions
     template_name = 'main_app/instruction_detail.html'
     def get_context_data(self, **kwargs):
@@ -184,7 +182,7 @@ class InstructionDetail(DetailView):
         return reverse('instruction_detail', kwargs={'pk': recipe_id})
 
 
-class RemoveInstruction(DeleteView):
+class RemoveInstruction(LoginRequiredMixin, DeleteView):
     model = RecipeInstructions
     form_class = InstructionForm
     template_name = 'main_app/recipe_detail.html'
@@ -272,7 +270,7 @@ def foundRecipe(request, query):
 
 # SAVED
 
-class SavedList(ListView):
+class SavedList(LoginRequiredMixin, ListView):
     model = SavedRecipes
     template_name = 'main_app/savedrecipe_list.html'
     def get_queryset(self):
@@ -281,12 +279,21 @@ class SavedList(ListView):
         # Filter the recipes by user
         queryset = SavedRecipes.objects.filter(user=user)
         return queryset
-class SavedRecipeDetail(DetailView):
-    model = SavedRecipes
 
-class SaveThisRecipe(CreateView):
-    model = Recipe
-    fields = ['name', 'description']
+class SavedRecipeDetail(LoginRequiredMixin, DetailView):
+    model = SavedRecipes
+    template_name = 'main_app/savedrecipes_detail.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe_id = self.kwargs['pk']
+        recipe = SavedRecipes.objects.get(id=recipe_id)
+        context['recipe'] = recipe
+        return context
+
+class SaveThisRecipe(LoginRequiredMixin, CreateView):
+    model = SavedRecipes
+    fields = ['name', 'ingredients','description']
+    template_name = 'main_app/savedrecipes_create.html'
     def form_valid(self, form):
         # pre-populate the form with the recipe and the current user
         form.instance.user = self.request.user
@@ -298,8 +305,8 @@ class SaveThisRecipe(CreateView):
             if recipelist:
                 recipe = recipelist[0] # retrieve matching item in list
                 form.instance.name = recipe['title']  # access title key
-                form.instance.description = recipe['ingredients']  # access ingredients key
-                    
+                form.instance.ingredients = recipe['ingredients']  # access ingredients key
+                form.instance.description = recipe['instructions']  # access ingredients key
             else: 
                 form.instance.name = "Sorry, This Recipe No Longer Exists!"
         return super().form_valid(form)
@@ -310,5 +317,12 @@ class SaveThisRecipe(CreateView):
             return self.form_valid(self.get_form(), query=search)
         else:
             return super().get(request, *args, **kwargs)
+
+class DeleteSavedRecipe(LoginRequiredMixin, DeleteView):
+    model = SavedRecipes
+    template_name = 'main_app/savedrecipes_delete.html'
+    def get_success_url(self):
+        print(self.kwargs)
+        return reverse('savedrecipes_list')
     
 #SAVED

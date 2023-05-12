@@ -36,7 +36,8 @@ urlpatterns = [
 #   Saved Recipes  
   path('recipes/savedrecipes/', views.SavedList.as_view(), name='savedrecipes_list'),
   path('recipes/find/<str:query>/savedrecipes/create', views.SaveThisRecipe.as_view(), name='savedrecipes_create'),
-  # path('recipes/<int:pk>/savedrecipes/<int:pk>', views.SavedRecipeDetail.as_view(), name='savedrecipes_detail'),
+  path('recipes/savedrecipes/<int:pk>/', views.SavedRecipeDetail.as_view(), name='savedrecipes_detail'),
+  path('recipes/savedrecipes/<int:pk>/delete/', views.DeleteSavedRecipe.as_view(), name='savedrecipes_delete'),
 
 
 

@@ -5,14 +5,17 @@
 <div class="card">
     <div class="card-content">
     <span class="card-title">{{ title }}</span>
-    <p>Ingredients: {{ ingredients}}</p>
-    <p>Instructions: {{ instructions }}</p>
+    <h6>Ingredients:</h6> <h6> {{ ingredients}}</h6>
+    <h6>Instructions: </h6> <h6> {{ instructions }}</h6>
   </div>
   </div>
   <form action="{% url 'savedrecipes_create' title %}" method="POST">
     {% csrf_token %}
-    <input type="text" name="name" value="{{title}}">
-    <input type="text" name="description" value="{{ingredients}}">
+
+    <input type="hidden" name="name" value="{{title}}">
+    <input type="hidden" name="ingredients" value="{{ingredients}}">
+    <input type="hidden" name="description" value="{{instructions}}">
+
     <input type="submit" value="Save Recipe" class="btn">
   </form>
 
