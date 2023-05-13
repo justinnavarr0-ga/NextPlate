@@ -4,6 +4,7 @@
 <h1>Recipe List</h1>
 <button><a href="{% url 'recipe_create' %}">Add New Recipe</a></button>
 <button><a href="{% url 'personal_list' %}">Show Recipes Only Ive Created</a></button>
+<button><a href="{% url 'recipe_index' %}">Show All User Recipes</a></button>
 {% for recipe in recipe_list %}
   <a href="{% url 'recipe_detail' recipe.id %}">
     <div class="card">

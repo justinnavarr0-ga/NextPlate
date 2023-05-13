@@ -16,7 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 def home(request):
   # Include an .html file extension - unlike when rendering EJS templates
-  return render(request, 'home.html')
+  return render(request, 'home.html', )
 def about(request):
   return render(request, 'about.html')
 class PersonalList(ListView):
@@ -185,13 +185,15 @@ class InstructionDetail(LoginRequiredMixin, DetailView):
 class RemoveInstruction(LoginRequiredMixin, DeleteView):
     model = RecipeInstructions
     form_class = InstructionForm
-    template_name = 'main_app/recipe_detail.html'
+    template_name = 'main_app/instruction_confirm_delete.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        print(context)
         recipe_id = self.kwargs['recipe_id']
         recipe = Recipe.objects.filter(id=recipe_id)
+        recipeinstructions = RecipeInstructions.objects.filter(id=self.object.id)
         context['recipe'] = recipe
-        context['recipeinstructions'] = RecipeInstructions.objects.filter(recipe=recipe_id)
+        context['recipeinstructions'] = recipeinstructions
         return context
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']

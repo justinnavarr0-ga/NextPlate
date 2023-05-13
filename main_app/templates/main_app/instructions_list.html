@@ -2,15 +2,11 @@
 {% block content %}
 
 <h1>Instructions To Cook {{recipe}}</h1>
-{{recipe.id}}
-{{recipeinstructions}}
 
 {% for everyinstruction in recipeinstructions %}
     <div class="card">
-        {{recipe.id}}
-        {{everyinstruction.id}}
         <div class="card-content">
-               <span class="card-title"> <a href="{% url 'instruction_detail' recipe.id everyinstruction.id %}">Step {{everyinstruction.step}}: {{everyinstruction}}</a>  </span> 
+               <span class="card-title">Step {{everyinstruction.step}}: {{everyinstruction}}</span> 
         </div>
     </div>
 {% endfor %}

@@ -2,116 +2,116 @@
 
 {% block content %}
 
-<h1>Recipe Details</h1> 
+<h1>{{recipe.name}}</h1> 
+<div class="card"> 
+{% for photo in recipe.photo_set.all %}
+<div class="jumbotron jumbotron-fluid text-center">
+    <img class="responsive-img card-panel" src="{{photo.url}}"> 
+</div>
+  
+{% empty %}
+{% if user == recipe.user %}
+  <div class="card-panel teal-text center-align">No Photos Uploaded</div>
+    <form action="{% url 'add_photo' recipe.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+        {% csrf_token %}
+        <input type="file" name="photo-file">
+        <button type="submit" class="btn">Upload Photo</button>
+    </form>
+{% endif %}
+{% endfor %}
+      
 
 <div class="row">
-    <div class="card">
-    {% for photo in recipe.photo_set.all %}
-      <img class="responsive-img card-panel" src="{{photo.url}}">
-      {% empty %}
-      <div class="card-panel teal-text center-align">No Photos Uploaded</div>
-    {% endfor %}
     {% if user == recipe.user %}
-        <div>
-          <form action="{% url 'add_photo' recipe.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
-          {% csrf_token %}
-          <input type="file" name="photo-file">
-          <button type="submit" class="btn">Upload Photo</button>
-          </form>
-        </div>
         <div class="card-action">
           <a href="{% url 'recipe_update' recipe.id %}">Edit</a>
           <a href="{% url 'recipe_delete' recipe.id %}">Delete</a>
         </div>
         <div class="card-content">
-          <span class="card-title">{{ recipe.name }}</span>
           <p>Description: {{ recipe.description }}</p>
         </div>
     {% else %}
       <div class="card-content">
-        <span class="card-title">{{ recipe.name }}</span>
         <p>Description: {{ recipe.description }}</p>
       </div>
     {% endif %}
-      
-  </div>
-  <div class="col s8">
-    <table class="striped">
-      <thead>
-        <tr>
-          <th>Ingredients</th>
-          {% if user == recipe.user %}
-          <th>Remove/Edit</th>
-          {% else %}
-          <th></th>
-          {% endif %}
-        </tr>
-      </thead>
-      
-      {% for item in recipeingredients %}
-      <tbody>
-          <tr>
-            <td>{{item.amount}} {{item.measurement}} of {{item.name}} </td>
-            <td>
-              <div class="row">
-                {% if user == recipe.user %}
-                <div class="col">
-                    <form action="{% url 'ingredient_remove' recipe.id item.id %}" method="POST">
-                      {% csrf_token %}
-                      <input type="submit" class="btn" value="Remove">
-                    </form>
-                  </div>
-                  <div class="col">
-                    <form action="{% url 'ingredient_edit' recipe.id item.id %}" method="POST">
-                      {% csrf_token %}
-                      <input type="submit" class="btn" value="Edit">
-                    </form>
-                  </div>
-                {% else %}
-                {% endif %}
-              </div>
-            </td>
-          </tr>
-      </tbody> 
-        {% endfor %}
-    </table>
   </div>
 
-  <div class="col s4">
-    {% if user == recipe.user %}
-        <form action="{% url 'ingredient_add' recipe.id %}" method="POST">
-          {% csrf_token %}
-          {{ form.as_div }}
-         <input type="submit" class="btn" value="Add Ingredient">
-        </form>
-      </div> 
-      <div class="col s4">
-        <form action="{% url 'instruction_create' recipe.id %}" method="POST">
-          {% csrf_token %}
-          {{ instructform.as_div }}
-          <input type="submit" class="btn" value="Add A Step">
-        </form>
-    {% endif %}
-    {{recipe}}
-    {{recipe.id}}
-    {% for everyinstruction in recipeinstructions %}
-    <a href="{% url 'instructions_list' recipe.id %}">Instructions</a>
-          <div class="card">
-            {{recipeinstructions.id}}
-            {{everyinstruction.id}}
-              <div class="card-content">
-                {% if user == recipe.user %}
-                  <form action="{% url 'delete_instruction' recipe.id everyinstruction.id %}" method="POST">
-                    {% csrf_token %}
-                    <input type="submit" class="btn" value="Remove">
-                  </form>
-                {% endif %}
-                  <span class="card-title">
-                    <a href="{% url 'instruction_detail' recipe.id everyinstruction.id %}">Step {{everyinstruction.step}}: {{everyinstruction}}</a>
-                  </span> 
-              </div>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <table>
+              <thead>Ingredients</thead>
+                {% for item in recipeingredients %}
+                <tbody>
+                <tr>
+                  <div class="row">
+                    <div class="col">
+                      {{item.amount}} {{item.measurement}} of {{item.name}}
+                    </div>                    
+                    {% if user == recipe.user %}
+                    <div class="col">
+                      <div class="btn-group" role="group" aria-label="Ingredient Actions">
+                        <form action="{% url 'ingredient_remove' recipe.id item.id %}" method="POST">
+                          {% csrf_token %}
+                          <input type="submit" class="btn btn-danger btn-sm" value="Remove">
+                        </form>
+                        <form action="{% url 'ingredient_edit' recipe.id item.id %}" method="POST">
+                          {% csrf_token %}
+                          <input type="submit" class="btn btn-secondary ml-2 btn-sm" value="Edit">
+                        </form>
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>  
+                {% endfor %}
+                </tr>
+          {% if user == recipe.user %}
+          <form action="{% url 'ingredient_add' recipe.id %}" method="POST">
+            {% csrf_token %}
+            {{form}}
+           <input type="submit" class="btn btn-secondary ml-2 btn-sm" value="Add Ingredient">
+          </form>
+          {% endif %}        
+        </tbody>    
+    </table>
+        </div>
+            <div class="col">
+              <table>
+                <thead>
+                  <a href="{% url 'instructions_list' recipe.id %}">Instructions</a>
+                </thead>
+                <tbody>
+                  {% for everyinstruction in recipeinstructions %}
+                  <div class="row">
+                    <div class="col-9">
+                      <span class="d-block">
+                        Step {{everyinstruction.step}}: {{everyinstruction}}
+                      </span>
+                    </div>
+                    <div class="col-3">
+                      <form action="{% url 'delete_instruction' everyinstruction.recipe.id everyinstruction.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-danger btn-sm" value="Remove">
+                      </form>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  {% if user == recipe.user %}  
+                      <form action="{% url 'instruction_create' recipe.id %}" method="POST">
+                        {% csrf_token %}
+                        {{ instructform }}
+                        <input type="submit" class="btn btn-danger btn-sm" value="Add A Step">
+                      </form>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
           </div>
-    {% endfor %}
+        </div>
+      </div>
+    </div>
+
   </div> 
 </div>
 <script>

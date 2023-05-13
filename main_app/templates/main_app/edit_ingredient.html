@@ -1,18 +1,37 @@
 {% extends 'base.html' %}
-
 {% block content %}
-  <h1>{{object}}</h1>
-  <h6>{{object.amount}} {{object.measurement}}(s) of {{object}}(s)</h6>
-  <!-- Leaving the action empty makes the form post to the same url used to display it -->
-  <form action="" method="POST">
-    <!-- Django requires the following for security purposes -->
-    {% csrf_token %}
-    <table>
-      <!-- Render the inputs inside of <tr>s & <td>s -->
-      {{ form.as_p }}
-    </table>
-    <input type="submit" value="Submit!" class="btn">
-    </form>
-
-  
+  <section>
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-5">
+              <h2 class="text-uppercase text-center mb-5">Edit Ingredient</h2>
+              <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col">
+                    Ingredient Amount: {{ form.amount }}
+                  </div>
+                  <div class="col">
+                    Ingredient measurement: {{ form.measurement }}
+                  </div>
+                  <div class="col">
+                    Ingredient Name: {{ form.name }}
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-auto">
+                    <input type="submit" value="Submit!" class="btn">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
