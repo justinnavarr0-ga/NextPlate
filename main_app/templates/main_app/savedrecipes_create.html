@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
-<h1>Create a new Saved Recipe</h1>
+<div class="divcard">
+  <h1>Create a new Saved Recipe</h1>
 <form method="POST">
   {% csrf_token %}
   {{form}}
   <input type="submit" value="Save Recipe" class="btn">
 </form>
+</div>
+
 
 {% endblock %}

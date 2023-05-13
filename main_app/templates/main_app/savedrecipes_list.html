@@ -1,19 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>My Saved Recipes</h1>
-
-{% for savedrecipe in object_list %}
-
-  <div class="card">
-  <div class="card-content">
-         <a href="{% url 'savedrecipes_detail' savedrecipe.id %}"><span class="card-title">{{savedrecipe.name}}</span></a>
-         <h6>Ingredients:</h6><h6>{{savedrecipe.ingredients}}</h6>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="navlist">
+        <h1>Recipe List</h1>
+        <h3><a href="{% url 'recipe_create' %}">Add New Recipe</a></h3>
+        <h3><a href="{% url 'personal_list' %}">Show Recipes Only I've Created</a></h3>
+        <h3><a href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
+      </ul>
+    </div>
+    <div class="col-md-9">
+      {% for savedrecipe in object_list %}
+      <div class="wholecontainer" style="width: 30rem; margin: 20px auto;">
+        <div class="recipecontainer">
+          <h4 class="card-title">{{ savedrecipe.name }}</h4>
+          <a class="btn btn-primary align-items-center" href="{% url 'savedrecipes_detail' savedrecipe.id %}"> Recipe Details</a>
+        </div>
+        <div class="card align-items-center">
+          <h6>Ingredients:</h6><h6>{{savedrecipe.ingredients}}</h6>
          <h6>Instructions:</h6><h6>{{savedrecipe.description}}</h6>
+        </div>
+        
+      </div>
+      {% endfor %}
+    </div>
   </div>
 </div>
-
-
-{% endfor %}
 
 {% endblock %}

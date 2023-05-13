@@ -30,6 +30,7 @@ class PersonalList(ListView):
         return queryset
 class RecipesList(ListView):
     model = Recipe
+    
 
 class RecipeDetail(FormMixin, DetailView):
     model = Recipe
@@ -289,7 +290,11 @@ class SavedRecipeDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         recipe_id = self.kwargs['pk']
         recipe = SavedRecipes.objects.get(id=recipe_id)
+        ingredients = recipe.ingredients.split('|')
+        instructions = recipe.description.split('.')
         context['recipe'] = recipe
+        context['ingredients'] = ingredients
+        context['instructions'] = instructions
         return context
 
 class SaveThisRecipe(LoginRequiredMixin, CreateView):

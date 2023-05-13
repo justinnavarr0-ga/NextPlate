@@ -2,10 +2,12 @@
 {% block content %}
 
 <h1>{{title}}</h1>
-<div class="card">
+
+
+<div class="divcard">
     <div class="card-content">
-    <span class="card-title">{{ title }}</span>
-    <h6>Ingredients:</h6> <h6> {{ ingredients}}</h6>
+    <h3>{{ title }}</h3>
+    <h6>Ingredients:</h6> <h6> {{ ingredients }}</h6>
     <h6>Instructions: </h6> <h6> {{ instructions }}</h6>
   </div>
   </div>
@@ -16,7 +18,7 @@
     <input type="hidden" name="ingredients" value="{{ingredients}}">
     <input type="hidden" name="description" value="{{instructions}}">
 
-    <input type="submit" value="Save Recipe" class="btn">
+    <input type="submit" value="Save Recipe" class="btn btn-success">
   </form>
 
 

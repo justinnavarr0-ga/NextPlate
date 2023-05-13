@@ -1,24 +1,33 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-   <h1>NextPlate</h1>
-  <h3>Type in some food and we can find some recipes!!</h3>
-  <form method="get" action="{% url 'find_recipes' %}">
-    <input type="text" name="q">
-    <button type="submit">Search</button>
-  </form>
-
-
-  {% for recipe in recipelist %}
-  {{ingredient}}
-  <div class="card">
-    <div class="card-content">
-    <a href="{% url 'recipe' recipe.title %}"><span class="card-title">{{ recipe.title }}</span></a>
-  </div>
-  </div>
+<div class="divcontainer">
+    <div class="searchcontainer">
+        <h1>Search Here For New Recipes!!</h1>
+        <form method="get" action="{% url 'find_recipes' %}">
+            <input type="text" name="q">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+   
   
-{% endfor %}   
+  <div class="divcard">
+    {% for recipe in recipelist %}
+    <div>
+        <div class="card-content">
+        <a href="{% url 'recipe' recipe.title %}"><h4 class="recipetitle">{{ recipe.title }}</h4></a>
+        </div>
+    </div>
+    {% endfor %}  
+  </div> 
+</div>
+
+  
+  
+
+   
+  
+ 
 
 
 

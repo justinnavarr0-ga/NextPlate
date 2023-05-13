@@ -2,8 +2,11 @@
 
 {% block content %}
 
-<h1>{{recipe.name}}</h1> 
-<div class="card"> 
+
+<div class="recipecontainer">
+
+<div class="card">
+<div class="TOP">{{recipe.name}}</div>   
 {% for photo in recipe.photo_set.all %}
 <div class="jumbotron jumbotron-fluid text-center">
     <img class="responsive-img card-panel" src="{{photo.url}}"> 
@@ -69,8 +72,13 @@
           {% if user == recipe.user %}
           <form action="{% url 'ingredient_add' recipe.id %}" method="POST">
             {% csrf_token %}
-            {{form}}
-           <input type="submit" class="btn btn-secondary ml-2 btn-sm" value="Add Ingredient">
+            Amount: {{form.amount}}
+            <br>
+            Measurement: {{form.measurement}}
+            <br>
+            Name: {{form.name}}
+            <br>
+           <input type="submit" class="btn btn-success ml-2 btn-sm" value="Add An Ingredient!">
           </form>
           {% endif %}        
         </tbody>    
@@ -87,6 +95,7 @@
                     <div class="col-9">
                       <span class="d-block">
                         Step {{everyinstruction.step}}: {{everyinstruction}}
+                        <br>
                       </span>
                     </div>
                     <div class="col-3">
@@ -97,11 +106,14 @@
                     </div>
                   </div>
                   {% endfor %}
+                  <br>
                   {% if user == recipe.user %}  
                       <form action="{% url 'instruction_create' recipe.id %}" method="POST">
                         {% csrf_token %}
-                        {{ instructform }}
-                        <input type="submit" class="btn btn-danger btn-sm" value="Add A Step">
+                        Step: {{ instructform.step }}
+                        <br>
+                        Directions: {{ instructform.directions }}
+                        <input type="submit" class="btn btn-success btn-sm" value="Add A Step!">
                       </form>
                   {% endif %}
                 </tbody>
@@ -111,8 +123,8 @@
         </div>
       </div>
     </div>
-
   </div> 
+</div>
 </div>
 <script>
   const selectEl = document.getElementById('id_measurement');

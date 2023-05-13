@@ -1,18 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>My Recipes</h1>
-<button><a href="{% url 'recipe_create' %}">Add New Recipe</a></button>
-<button><a href="{% url 'personal_list' %}">Show Recipes Only Ive Created</a></button>
-<button><a href="{% url 'recipe_index' %}">Show All User Recipes</a></button>
-{% for recipe in recipe_list %}
-  <a href="{% url 'recipe_detail' recipe.id %}">
-    <div class="card">
-        <div class="card-content">
-            <span class="card-title">{{ recipe.name }}</span>
-        </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="navlist">
+        <h1>Recipe List</h1>
+        <h3><a href="{% url 'recipe_create' %}">Add New Recipe</a></h3>
+        <h3><a href="{% url 'personal_list' %}">Show Recipes Only I've Created</a></h3>
+        <h3><a href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
+      </ul>
     </div>
-  </a>
-{% endfor %}
+    <div class="col-md-9">
+      {% for recipe in recipe_list %}
+      <div class="wholecontainer" style="height: 15rem; width: 30rem; margin-left: auto; margin-right: auto; margin-top: 15px;">
+        <div class="card align-items-center">
+          {% for photo in recipe.photo_set.all %}
+          <img class="responsive-img card-panel" src="{{photo.url}}">
+          {% empty %}
+          <br>
+          <p>No photo of this recipe yet</p>
+          {% endfor %}
+        </div>
+        <div class="recipecontainer">
+          <h4 class="card-title">{{ recipe.name }}</h4>
+          <a class="btn btn-primary align-items-center" href="{% url 'recipe_detail' recipe.id %}"> Recipe Details</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 
 {% endblock %}
