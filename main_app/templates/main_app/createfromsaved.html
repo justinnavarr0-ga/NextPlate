@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="divcard">
+  <h1>Create a new Recipe</h1>
+<form method="POST">
+  {% csrf_token %}
+
+  
+</form>
+<input type="submit" value="Save Recipe" class="btn">
+</div>
+
+
+{% endblock %}

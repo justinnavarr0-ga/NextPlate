@@ -26,10 +26,13 @@
 
 <div class="row">
     {% if user == recipe.user %}
-        <div class="card-action">
-          <a href="{% url 'recipe_update' recipe.id %}">Edit</a>
-          <a href="{% url 'recipe_delete' recipe.id %}">Delete</a>
-        </div>
+    <div class="d-flex justify-content-end">
+      <div class="ml-auto">
+        <a class="btn btn-danger" href="{% url 'recipe_delete' recipe.id %}">Delete Recipe </a>
+        <br>
+        <a class="btn btn-primary" href="{% url 'recipe_update' recipe.id %}">Edit Description</a>
+      </div>
+    </div>
         <div class="card-content">
           <p>Description: {{ recipe.description }}</p>
         </div>
@@ -50,7 +53,7 @@
                 <tr>
                   <div class="row">
                     <div class="col">
-                      {{item.amount}} {{item.measurement}} of {{item.name}}
+                      {{item.name}}
                     </div>                    
                     {% if user == recipe.user %}
                     <div class="col">
@@ -72,10 +75,6 @@
           {% if user == recipe.user %}
           <form action="{% url 'ingredient_add' recipe.id %}" method="POST">
             {% csrf_token %}
-            Amount: {{form.amount}}
-            <br>
-            Measurement: {{form.measurement}}
-            <br>
             Name: {{form.name}}
             <br>
            <input type="submit" class="btn btn-success ml-2 btn-sm" value="Add An Ingredient!">
@@ -94,7 +93,7 @@
                   <div class="row">
                     <div class="col-9">
                       <span class="d-block">
-                        Step {{everyinstruction.step}}: {{everyinstruction}}
+                        {{everyinstruction}}
                         <br>
                       </span>
                     </div>
@@ -110,9 +109,8 @@
                   {% if user == recipe.user %}  
                       <form action="{% url 'instruction_create' recipe.id %}" method="POST">
                         {% csrf_token %}
-                        Step: {{ instructform.step }}
                         <br>
-                        Directions: {{ instructform.directions }}
+                        Add some directions here: {{ instructform.directions }}
                         <input type="submit" class="btn btn-success btn-sm" value="Add A Step!">
                       </form>
                   {% endif %}

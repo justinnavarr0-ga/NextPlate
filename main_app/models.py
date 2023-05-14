@@ -2,24 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-MEASUREMENTS = (
-    ('oz', 'ounce'),
-    ('g', 'gram'),
-    ('lb', 'pound'),
-    ('kg', 'kilogram'),
-    ('pinch', 'pinch'),
-    ('l', 'liter'),
-    ('gal', 'Gallon'),
-    ('pint', 'Pint'),
-    ('qt', 'Quart'),
-    ('ml', 'Mililiter'),
-    ('cup', 'Cup'),
-    ('tbsp', 'tablespoon'),
-    ('tsp', 'teaspoon'),
-    ('pieces', 'pieces'),
-)
-
-
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100)
@@ -35,38 +17,33 @@ class Recipe(models.Model):
 
 
 class Ingredients(models.Model):
-    name = models.CharField(max_length=50)
-    amount = models.FloatField()
-    measurement = models.CharField(max_length=6, choices=MEASUREMENTS, default=MEASUREMENTS[0][0])
+    name = models.CharField(max_length=100, blank=False)
     
-    def __str__(self):
-        return self.name
-
-
+  
 class RecipeIngredients(models.Model):
-    name = models.CharField(max_length=50, blank=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE, null=True)
-    amount = models.FloatField()
-    measurement = models.CharField(max_length=6, choices=MEASUREMENTS, default=MEASUREMENTS[0][0])
+    name = models.CharField(max_length=100, blank=True)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, blank=True)
+    ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
+    # def save(self, *args, **kwargs):
+    #     # Check if the name is not an empty string
+    #     if self.name.strip():
+    #         # Check if the ingredient with the given name already exists in the database
+    #         existing_ingredients = Ingredients.objects.filter(name=self.name)
+    #         if existing_ingredients.exists():
+    #             ingredient = existing_ingredients.first()
+    #             self.ingredient = ingredient
+    #         else:
+    #             ingredient = Ingredients.objects.create(name=self.name)
+    #             self.ingredient = ingredient
+    #     if self.ingredient:
+    #         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.amount} {self.measurement} of {self.name}"
-    
-    def save(self, *args, **kwargs):
-        # Check if the ingredient with the given name already exists in the database
-        ingredient = Ingredients.objects.create(name=self.name, amount=self.amount, measurement=self.measurement)
-        self.ingredient = ingredient
-        super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse('ingredient_detail', kwargs={'pk': self.id})
 
 class RecipeInstructions(models.Model):
-    step = models.IntegerField()
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     directions = models.TextField(max_length=250)
-    objects = models.Manager()
+    
     def __str__(self):
         return self.directions
         
@@ -87,7 +64,7 @@ class Photo(models.Model):
 class SavedRecipes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=1000)
+    description = models.TextField(max_length=2000)
     ingredients = models.TextField(max_length=2000)
 
     def get_absolute_url(self):

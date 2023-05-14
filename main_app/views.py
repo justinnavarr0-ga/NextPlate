@@ -9,9 +9,11 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from .models import Ingredients, Recipe, SavedRecipes, RecipeIngredients, RecipeInstructions, Photo
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .forms import IngredientForm, SavedRecipeForm, InstructionForm
+from .forms import IngredientForm, SavedRecipeForm, InstructionForm, RecipeForm
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 
 # Create your views here.
 def home(request):
@@ -116,9 +118,10 @@ class RecipeIngredientRemove(LoginRequiredMixin, DeleteView):
         recipe_id = self.kwargs['recipe_id']
         print(self.kwargs)
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
+        
 class RecipeIngredientEdit(LoginRequiredMixin, UpdateView):
     model = RecipeIngredients
-    fields = ['name', 'amount', 'measurement']
+    fields = ['name']
     template_name = 'main_app/edit_ingredient.html'
     def form_valid(self, form):
         recipe_id = self.kwargs['recipe_id']
@@ -185,17 +188,15 @@ class InstructionDetail(LoginRequiredMixin, DetailView):
 
 class RemoveInstruction(LoginRequiredMixin, DeleteView):
     model = RecipeInstructions
-    form_class = InstructionForm
-    template_name = 'main_app/instruction_confirm_delete.html'
+    template_name = 'main_app/recipe_detail.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(context)
-        recipe_id = self.kwargs['recipe_id']
-        recipe = Recipe.objects.filter(id=recipe_id)
-        recipeinstructions = RecipeInstructions.objects.filter(id=self.object.id)
-        context['recipe'] = recipe
-        context['recipeinstructions'] = recipeinstructions
+        Rinstructions= RecipeInstructions.objects.filter(recipe=self.object.id)
+        recipe= self.kwargs['recipe_id']
+        context['recipe'] = Recipe.objects.get(id=recipe)
+        context['recipeinstructions'] = Rinstructions
         return context
+
     def get_success_url(self):
         recipe_id = self.kwargs['recipe_id']
         return reverse('recipe_detail', kwargs={'pk': recipe_id})
@@ -283,8 +284,9 @@ class SavedList(LoginRequiredMixin, ListView):
         queryset = SavedRecipes.objects.filter(user=user)
         return queryset
 
-class SavedRecipeDetail(LoginRequiredMixin, DetailView):
+class SavedRecipeDetail(LoginRequiredMixin, DetailView, FormMixin):
     model = SavedRecipes
+    form_class = RecipeForm
     template_name = 'main_app/savedrecipes_detail.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -293,9 +295,59 @@ class SavedRecipeDetail(LoginRequiredMixin, DetailView):
         ingredients = recipe.ingredients.split('|')
         instructions = recipe.description.split('.')
         context['recipe'] = recipe
+        context['recipes'] = recipe_id
         context['ingredients'] = ingredients
         context['instructions'] = instructions
         return context
+    def get_success_url(self):
+        recipe_id = self.kwargs['recipe_id']
+        return reverse('recipe_detail', kwargs={'pk': recipe_id})
+
+
+
+
+class CreateFromSaved(CreateView):
+    model = RecipeIngredients
+    form_class = IngredientForm
+
+    def form_valid(self, form):
+        # Get the SavedRecipes object
+        saved_recipe = get_object_or_404(SavedRecipes, pk=self.kwargs['pk'])
+
+        # Validate the form
+        if form.is_valid():
+            # Create a new Recipe object from the SavedRecipes object
+            newrecipe = Recipe.objects.create(
+                user=self.request.user,
+                name=saved_recipe.name,
+            )
+            instructionsinlist = saved_recipe.description.split('.')
+            for item in instructionsinlist:
+                instruct = item.strip() 
+                if instruct:  # Check if the item is not an empty string and contains non-whitespace characters
+                    recipeinstruction = RecipeInstructions(directions=instruct, recipe=newrecipe)
+                    recipeinstruction.save()
+            # Loop through the ingredients in the saved recipe
+            ingredientsinlist = saved_recipe.ingredients.split('|')
+            for item in ingredientsinlist:
+                strippeditem = item.strip()  # Strip whitespace from the item
+                if strippeditem:  # Check if the item is not an empty string and contains non-whitespace characters
+                    try:
+                        # Check if a RecipeIngredients object already exists for this ingredient
+                        recipeingredient = RecipeIngredients.objects.get(name=strippeditem, recipe=newrecipe)
+                    except RecipeIngredients.DoesNotExist:
+                        # Create a new RecipeIngredients object
+                        recipeingredient = RecipeIngredients(name=strippeditem, recipe=newrecipe)
+                        recipeingredient.save()
+
+            
+            # Redirect to the success URL
+        return super().form_valid(form)
+    def get_success_url(self):
+        return reverse('recipe_list')
+
+
+
 
 class SaveThisRecipe(LoginRequiredMixin, CreateView):
     model = SavedRecipes
