@@ -1,32 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="row">
+  <div class="navlist col-md-4">
+    <ul>
+      <br>
+      <br>
+      <h1>Saved Recipes</h1>
+      <br>
+      <br>
+      <h3><a class="nav-item" href="{% url 'find_recipes' %}">Find New Recipes</a></h3>
+      
+      <h3><a class="nav-item" href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
+    </ul>
+  </div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-3">
-      <ul class="navlist">
-        <h1>Recipe List</h1>
-        <h3><a href="{% url 'recipe_create' %}">Add New Recipe</a></h3>
-        <h3><a href="{% url 'personal_list' %}">Show Recipes Only I've Created</a></h3>
-        <h3><a href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
-      </ul>
-    </div>
-    <div class="col-md-9">
-      {% for savedrecipe in object_list %}
-      <div class="wholecontainer" style="width: 30rem; margin: 20px auto;">
-        <div class="recipecontainer">
-          <h4 class="card-title">{{ savedrecipe.name }}</h4>
-          <a class="btn btn-primary align-items-center" href="{% url 'savedrecipes_detail' savedrecipe.id %}"> Recipe Details</a>
-        </div>
-        <div class="card align-items-center">
-          <h6>Ingredients:</h6><h6>{{savedrecipe.ingredients}}</h6>
-         <h6>Instructions:</h6><h6>{{savedrecipe.description}}</h6>
-        </div>
-        
-      </div>
-      {% endfor %}
+  <div class="recipebox col-md-8">
+    {% for savedrecipe in object_list %}
+    <a href="{% url 'savedrecipes_detail' savedrecipe.id %}">
+    <div class="row py-5">
+    <div class="col">
+      <h2 class="card-title">{{ savedrecipe.name }}</h2>
     </div>
   </div>
-</div>
+   <div class="col px-5 align-items-center">
+    <div class="align-items-center">
+      <h4 class="card-title">Ingredients:</h4>
+      </div>
+      <div>
+        <h6>{{savedrecipe.ingredients}}</h6>
+      </div>
+      <div class="align-items-center">
+        <h4 class="card-title">Instructions:</h4>
+        </div>
+        <div>
+          <h6>{{savedrecipe.description}}</h6>
+        </div>
+    </div>
+  </a>
 
+  <div class="line">_</div>
+    {% endfor %}
+  </div>
+  
+</div>
 {% endblock %}

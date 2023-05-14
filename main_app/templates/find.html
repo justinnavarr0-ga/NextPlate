@@ -3,11 +3,14 @@
 
 <div class="divcontainer">
     <div class="searchcontainer">
-        <h1>Search Here For New Recipes!!</h1>
+        <div style="margin-left: 10%;">
+          <h1>Search Here For New Recipes!!</h1>
         <form method="get" action="{% url 'find_recipes' %}">
             <input type="text" name="q">
             <button type="submit">Search</button>
-        </form>
+        </form>  
+        </div>
+        
     </div>
    
   

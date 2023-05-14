@@ -5,12 +5,12 @@
 <div class="divcard">
     <form action="{% url 'savedrecipes_delete' pk=recipe.id %}" method="POST">
         {% csrf_token %}
-        <input type="submit" class="btn btn-danger btn-sm float-right" value="Delete This Recipe?">
+        <input type="submit" class="btn btn-danger btn-sm float-right" value="Delete Recipe From Saved List?">
     </form>
     <br>
     <form action="{% url 'createfromsaved' pk=recipe.id %}" method="POST">
         {% csrf_token %}
-        <input type="submit" class="btn btn-danger btn-sm float-right" value="Add to User Recipes?">
+        <input type="submit" class="btn btn-success btn-sm float-right" value="Add to Community Recipes">
     </form>
     <!-- i can create a new instance of recipes like a share with other other users here i think in the view -->
     <div class="card-content">

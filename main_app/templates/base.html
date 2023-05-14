@@ -15,9 +15,10 @@
     background-image: url("{% static 'pictures/background.jpeg' %}") ;
     background-repeat: no-repeat;
   }
-  h1, h3, a {
+  h1, h3 {
     color: white;
   }
+
   .home {
    color: white;
    max-width: 200px;
@@ -65,11 +66,12 @@
   }
 
   .navlist {
-  margin-top: -10px;
-  margin-left: -75px;
-  padding-top: 30px;
-  height: 150vh;
   background-color: rgba(128, 128, 128, 0.75);
+  
+  }
+  .recipebox {
+    background-color: rgba(255, 255, 255);
+    min-height: 100vh;
   }
   
   .recipecontainer {
@@ -89,6 +91,7 @@
   .custom-bg-color {
     background-color: rgb(63, 74, 68); /* replace with your desired color */
   }
+
   .TOP {
     color: black;
     font-size: 69px;
@@ -98,6 +101,15 @@
     height: 200px;
     width: 300px;
     background-size: cover;
+  }
+
+  .line {
+    background-color: rgba(128, 128, 128, 0.75);
+    font-size: 1px;
+  }
+  .line-container {
+    margin-left: 25vw;
+    max-width: 70vw;
   }
 
 </style>
@@ -117,12 +129,8 @@
 
     </div>
   </nav>
-  <div class="container">
-  
     {% block content %}
 
     {% endblock %}
-    
-  </div>
 </body>
 </html>

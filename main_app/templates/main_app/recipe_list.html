@@ -1,35 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container">
+
   <div class="row">
-    <div class="col-md-3">
-      <ul class="navlist">
-        <h1>Recipe List</h1>
-        <h3><a href="{% url 'recipe_create' %}">Add New Recipe</a></h3>
-        <h3><a href="{% url 'personal_list' %}">Show Recipes Only I've Created</a></h3>
-        <h3><a href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
+    <div class="navlist col-md-4">
+      <ul>
+        <br>
+        <br>
+        <h1>Community Recipe List</h1>
+        <h3><a class="nav-item" href="{% url 'recipe_create' %}">Add New Recipe</a></h3>
+        <h3><a class="nav-item" href="{% url 'personal_list' %}">Show Recipes Only I've Created</a></h3>
+        <h3><a class="nav-item" href="{% url 'recipe_index' %}">Show All User Recipes</a></h3>
       </ul>
     </div>
-    <div class="col-md-9">
+
+    <div class="recipebox col-md-8">
       {% for recipe in recipe_list %}
-      <div class="wholecontainer" style="height: 15rem; width: 30rem; margin-left: auto; margin-right: auto; margin-top: 15px;">
-        <div class="card align-items-center">
+      <a href="{% url 'recipe_detail' recipe.id %}">
+      <div class="row py-5">
+      <div class="col">
+
+      
+        <div class="px-5">
           {% for photo in recipe.photo_set.all %}
           <img class="responsive-img card-panel" src="{{photo.url}}">
           {% empty %}
           <br>
           <p>No photo of this recipe yet</p>
           {% endfor %}
+      </div>
+    </div>
+     <div class="col px-5 align-items-center">
+      <div class="align-items-center">
+        <h4 class="card-title">{{ recipe.name }}</h4>
         </div>
-        <div class="recipecontainer">
-          <h4 class="card-title">{{ recipe.name }}</h4>
-          <a class="btn btn-primary align-items-center" href="{% url 'recipe_detail' recipe.id %}"> Recipe Details</a>
+        <div>
+          {{recipe.description}}
         </div>
       </div>
+    <div class="col">
+
+    </div>
+      </div>
+    </a>
+    <div class="line">_</div>
       {% endfor %}
     </div>
   </div>
-</div>
+
 
 {% endblock %}
