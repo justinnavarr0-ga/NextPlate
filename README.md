@@ -28,7 +28,7 @@ NextPlate has something for everyone.
 
 <br />
 
-## Dont wait! Figure out whats going on your **NextPlate** ..
+[## Dont wait! Click Here to figure out whats going on your **NextPlate**](https://nextplate.herokuapp.com/)
 
 First Sign Up or Log In on NextPlate's website:
 
@@ -60,6 +60,85 @@ NextPlate still has a lot of features to come!
 -More Detailed Recipes
 -Ratings, Comments, and Favorites on recipes
 
+**Problems Faced**
+The most difficult functional view code I had written was the one below to connect to an API containing recipes. However, this was only the beginning to the hardest problem I faced
+
+```
+def findRecipes(request):
+    search = request.GET.get('q', '') 
+    api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
+    response = requests.get(api_url, headers={'X-Api-Key': })
+    
+    if response.status_code == requests.codes.ok:
+        recipelist = response.json()  # convert response to JSON object
+        return render(request, 'find.html', {'recipelist': recipelist})
+    else:
+        return render(request, 'find.html')
+
+def foundRecipe(request, query):
+    search = query
+    api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(search)
+    response = requests.get(api_url, headers={'X-Api-Key': })
+    if response.status_code == requests.codes.ok:
+        recipelist = response.json()  # convert response to JSON object
+        if recipelist:
+            recipe = recipelist[0] # retrieve matching item in list
+            title = recipe['title']  # access title key
+            ingredients = recipe['ingredients']  # access ingredients key
+            instructions = recipe['instructions']
+            return render(request, 'recipe.html', {'title': title, 'ingredients': ingredients, 'instructions': instructions})
+        else: 
+            recipelist = "Sorry This Recipe No Longer Exists!"
+            return render(request, 'recipe.html', {'title': recipelist})
+    else:
+        return render(request, 'find.html')
+```
+
+This class based view was definitely my biggest hurdle. I found it extremely difficult for me to code this since I am still relatively new to python, and the idea of it came to me on the Friday before turning in our projects since I was able to write that function to connect to an API to generate recipes the previous day. I spent a lot of time over the weekend to prepare this view and it finally worked on Sunday. It took a lot of restructuring my models in order to utilize this the way I intended to 
+
+```
+class CreateFromSaved(CreateView):
+    model = RecipeIngredients
+    form_class = IngredientForm
+
+    def form_valid(self, form):
+        # Get the SavedRecipes object
+        saved_recipe = get_object_or_404(SavedRecipes, pk=self.kwargs['pk'])
+
+        # Validate the form
+        if form.is_valid():
+            # Create a new Recipe object from the SavedRecipes object
+            newrecipe = Recipe.objects.create(
+                user=self.request.user,
+                name=saved_recipe.name,
+            )
+            instructionsinlist = saved_recipe.description.split('.')
+            for item in instructionsinlist:
+                instruct = item.strip() 
+                if instruct:  # Check if the item is not an empty string and contains non-whitespace characters
+                    recipeinstruction = RecipeInstructions(directions=instruct, recipe=newrecipe)
+                    recipeinstruction.save()
+            # Loop through the ingredients in the saved recipe
+            ingredientsinlist = saved_recipe.ingredients.split('|')
+            for item in ingredientsinlist:
+                strippeditem = item.strip()  # Strip whitespace from the item
+                if strippeditem:  # Check if the item is not an empty string and contains non-whitespace characters
+                    try:
+                        # Check if a RecipeIngredients object already exists for this ingredient
+                        recipeingredient = RecipeIngredients.objects.get(name=strippeditem, recipe=newrecipe)
+                    except RecipeIngredients.DoesNotExist:
+                        # Creates a new RecipeIngredients object
+                        recipeingredient = RecipeIngredients(name=strippeditem, recipe=newrecipe)
+                        recipeingredient.save()
+            # Redirects to the success URL
+        return super().form_valid(form)
+    def get_success_url(self):
+        return reverse('recipe_list')
+
+```
+
+Other problems I faced were styling with bootstrap. I had only used it once before for one of my other projects and it took a while for me to switch from tailwind back to bootstrap. Still I managed though.
+
 **Authors and Acknowledgements**
 
 Authors:
@@ -73,6 +152,6 @@ Acknowledgements:
 
 ### About This Project
 
-This is our 4th and final capstone project showcasing our programming skills. This project utilizes Python/Django and the bootstrap framework, to build a User Centric Application with CRUD functionality and Authentication using Django's built in authentication.
+This is our 4th and final capstone project showcasing our programming skills. This project utilizes Python/Django and the bootstrap framework, to build a User Centric Application with CRUD functionality and Authentication using Django's built in authentication. This project is basically the epitome of my learning at General Assembly. I have learned a lot, but one of the most important things I learned was actually how to learn and especially how I learn. I would like to again thank my instructors: Ken, Matt, Payne, and Evan for getting me to this point and I owe a huge part of my future success to their patience and guidance along the way.
 
 Written for **General Assembly Software Engineering Immersive Bootcamp**
