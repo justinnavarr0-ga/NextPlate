@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="divcontainer">
-    <div class="searchcontainer">
+<div class="row">
+    <div class="navlist col-md-4">
         <div style="margin-left: 10%;">
+            <br>
+            <br>
           <h1>Search Here For New Recipes!!</h1>
         <form method="get" action="{% url 'find_recipes' %}">
             <input type="text" name="q">
@@ -13,7 +15,8 @@
         
     </div>
    
-  
+<div class="recipebox2 col-md-8">
+    
   <div class="divcard">
     {% for recipe in recipelist %}
     <div>
@@ -21,8 +24,10 @@
         <a href="{% url 'recipe' recipe.title %}"><h4 class="recipetitle">{{ recipe.title }}</h4></a>
         </div>
     </div>
-    {% endfor %}  
-  </div> 
+    {% endfor %} 
+    </div> 
+     
+</div>
 </div>
 
   

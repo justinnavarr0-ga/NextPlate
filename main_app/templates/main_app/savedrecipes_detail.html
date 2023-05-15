@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<h1>Recipe Details</h1> 
 <div class="divcard">
     <form action="{% url 'savedrecipes_delete' pk=recipe.id %}" method="POST">
         {% csrf_token %}

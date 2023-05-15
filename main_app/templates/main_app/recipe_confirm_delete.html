@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="divcard">
   <h1>Delete This Recipe</h1>
 
   <h4>Are you sure you want to delete <span class="teal-text">{{ object.name }}</span>?</h4>
 
   <form action="" method="POST">
     {% csrf_token %}
-    <input type="submit" value="Yes - Delete!" class="btn">
+    <input type="submit" value="Yes - Delete!" class="btn btn-danger">
     <a href="{% url 'recipe_detail' recipe.id %}">Cancel</a>
   </form>
+</div>
+  
 {% endblock %}

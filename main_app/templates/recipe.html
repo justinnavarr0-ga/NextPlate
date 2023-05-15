@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>{{title}}</h1>
-
-
 <div class="divcard">
     <div class="card-content">
-    <h3>{{ title }}</h3>
+    <div class="row justify-content-between">
+        <div class="col ml-auto">
+        <h3>{{ title }}</h3>
+        </div>
+        <div class="col"></div>
+        <div class="col"></div>
+        <div class="col">
+           <form action="{% url 'savedrecipes_create' title %}" method="POST">
+            {% csrf_token %}
+        
+            <input type="hidden" name="name" value="{{title}}">
+            <input type="hidden" name="ingredients" value="{{ingredients}}">
+            <input type="hidden" name="description" value="{{instructions}}">
+        
+            <input type="submit" value="Save This Recipe" class="btn btn-success mr-auto">
+        </form> 
+        </div>
+        
+    </div>
+    
     <h6>Ingredients:</h6> <h6> {{ ingredients }}</h6>
     <h6>Instructions: </h6> <h6> {{ instructions }}</h6>
   </div>
-  </div>
-  <form action="{% url 'savedrecipes_create' title %}" method="POST">
-    {% csrf_token %}
-
-    <input type="hidden" name="name" value="{{title}}">
-    <input type="hidden" name="ingredients" value="{{ingredients}}">
-    <input type="hidden" name="description" value="{{instructions}}">
-
-    <input type="submit" value="Save Recipe" class="btn btn-success">
-  </form>
+</div>
+  
 
 
 {% endblock %}
